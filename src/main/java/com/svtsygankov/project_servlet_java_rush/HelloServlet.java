@@ -1,4 +1,4 @@
-package com.svtsygankov.project_servlet_java_ruish;
+package com.svtsygankov.project_servlet_java_rush;
 
 import java.io.*;
 

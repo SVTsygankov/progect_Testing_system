@@ -1,4 +1,4 @@
-package com.svtsygankov.project_servlet_java_ruish.entity;
+package com.svtsygankov.project_servlet_java_rush.entity;
 
 public class AnswerOption {
     private Integer id;

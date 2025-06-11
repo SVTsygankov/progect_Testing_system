@@ -1,4 +1,4 @@
-package com.svtsygankov.project_servlet_java_ruish.entity;
+package com.svtsygankov.project_servlet_java_rush.entity;
 
 import java.time.Instant;
 import java.util.List;
