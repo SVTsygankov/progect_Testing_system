@@ -1,7 +1,11 @@
 package com.svtsygankov.project_servlet_java_rush.entity;
 
-import java.util.List;
+import lombok.Builder;
+import lombok.Data;
 
+import java.util.List;
+@Data
+@Builder
 public class Test {
 
     private Integer id;

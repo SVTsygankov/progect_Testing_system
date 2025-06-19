@@ -8,16 +8,19 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-@WebServlet(urlPatterns = "/registration",
-        initParams = {@WebInitParam(name = "resourceName", value = "/registration.jsp")})
-public class RegistrationServlet extends BaseAuthenticationServlet{
+@WebServlet(urlPatterns = "/login",
+        initParams = {@WebInitParam(name = "resourceName", value = "/login.jsp")}
+)
+public class LoginServlet extends BaseAuthenticationServlet {
 
-    @Override
+      @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if(authenticationService.register(req)) {
-            resp.sendRedirect("/login");
+
+        if (authenticationService.authenticated(req)) {
+           resp.sendRedirect("/secure/tests");
+
         } else {
-            req.getRequestDispatcher(getInitParameter("resourceName")).forward(req, resp);
+            req.getRequestDispatcher("/login.jsp").forward(req, resp);
         }
     }
 }

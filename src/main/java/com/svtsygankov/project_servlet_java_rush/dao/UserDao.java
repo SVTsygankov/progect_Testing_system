@@ -10,14 +10,14 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class UserDao extends BaseDao<User>{
 
-    private final AtomicLong currentId = new AtomicLong(1L);
+    private final AtomicLong currentId = new AtomicLong(0L);
 
     public UserDao(ObjectMapper mapper, File file) {
         super(mapper, file, new TypeReference<List<User>>() {});
-        initNextId();
+        initCurrentId();
     }
 
-    private void initNextId() {
+    private void initCurrentId() {
         List<User> users = findAll();
         if (!users.isEmpty()) {
             long maxId = users.stream()
@@ -25,17 +25,16 @@ public class UserDao extends BaseDao<User>{
                     .max()
                     .getAsLong();
 
-            currentId.set(maxId + 1);
+            currentId.set(maxId);
         }
     }
 
     public long getNextId() {
-        return currentId.getAndIncrement();
+        return currentId.incrementAndGet();
     }
 
     @Override
     public void save(User user) {
-        user.setId(getNextId());
         super.save(user);
     }
 }

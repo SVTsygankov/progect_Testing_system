@@ -16,13 +16,23 @@ public class AuthenticationService {
 
     public boolean register(HttpServletRequest req) {
         var credentials = extract(req);
-        if(userService.isExist(credentials.login())){
+        String confirmPassword = req.getParameter("confirmPassword");
+
+        if (!credentials.password().equals(confirmPassword)) {
+            req.setAttribute("registrationErrorMessage", "Пароли не совпадают");
             return false;
         }
+
+        if (userService.isExist(credentials.login())) {
+            req.setAttribute("registrationErrorMessage", "Имя пользователя уже занято");
+            return false;
+        }
+
         userService.createUser(credentials.login(), credentials.password());
         return true;
     }
-    public boolean authenticated(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+
+    public boolean authenticated(HttpServletRequest req) throws IOException {
 
         var credentials = extract(req);
 
