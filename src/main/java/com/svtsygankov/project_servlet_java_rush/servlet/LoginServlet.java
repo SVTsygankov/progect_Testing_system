@@ -9,8 +9,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet(urlPatterns = "/login",
-        initParams = {@WebInitParam(name = "resourceName", value = "/login.jsp")}
-)
+        initParams = {@WebInitParam(name = "resourceName", value = "/WEB-INF/views/login.jsp"),
+                      @WebInitParam(name = "contentPage", value = "login-form")
+        })
 public class LoginServlet extends BaseAuthenticationServlet {
 
       @Override
@@ -20,7 +21,8 @@ public class LoginServlet extends BaseAuthenticationServlet {
            resp.sendRedirect("/secure/tests");
 
         } else {
-            req.getRequestDispatcher("/login.jsp").forward(req, resp);
+            req.setAttribute("contentPage", "/WEB-INF/views/login-form.jsp");
+            req.getRequestDispatcher(getInitParameter("resourceName")).forward(req, resp);
         }
     }
 }

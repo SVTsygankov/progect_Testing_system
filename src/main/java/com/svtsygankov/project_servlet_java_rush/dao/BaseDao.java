@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,8 +17,7 @@ public abstract class BaseDao<T> {
     final File file;
     private TypeReference<List<T>> typeReference;
 
-    @SneakyThrows
-    public void save(T object) {
+        public void save(T object)  throws IOException{
         List<T> objects = findAll();
 
         objects.add(object);
@@ -26,7 +26,7 @@ public abstract class BaseDao<T> {
     }
 
     @SneakyThrows
-    public List<T> findAll()  {
+    public List<T> findAll() throws IOException {
         List<T> objects = new ArrayList<>();
 
         // Если файл существует и не пустой — читаем текущий список сущностей

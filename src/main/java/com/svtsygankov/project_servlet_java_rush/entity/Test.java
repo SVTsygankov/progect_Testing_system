@@ -9,8 +9,8 @@ import java.util.List;
 public class Test {
 
     private Integer id;
-    private String name;
+    private String title;
     private String topic;
-    private Long created_by;
+    private Long created_by;        // id админа создавшего тест
     private List<Question> questions;
 }

@@ -16,10 +16,14 @@ public class TestService {
         return testDao.findAll();
     }
 
-    public void createTest(String name, String topic, Long createdById, List<Question> questions) throws IOException {
+    public Test findById(Integer id) throws IOException {
+        return testDao.findById(id);
+    }
+
+    public void createTest(String title, String topic, Long createdById, List<Question> questions) throws IOException {
         Test test = Test.builder()
                 .id(testDao.getNextId())
-                .name(name)
+                .title(title)
                 .topic(topic)
                 .created_by(createdById)
                 .questions(questions)

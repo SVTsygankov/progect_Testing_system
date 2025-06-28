@@ -14,7 +14,7 @@ public class AuthenticationService {
     private final LoginAttemptService loginAttemptService;
     private final UserService userService;
 
-    public boolean register(HttpServletRequest req) {
+    public boolean register(HttpServletRequest req) throws IOException {
         var credentials = extract(req);
         String confirmPassword = req.getParameter("confirmPassword");
 
