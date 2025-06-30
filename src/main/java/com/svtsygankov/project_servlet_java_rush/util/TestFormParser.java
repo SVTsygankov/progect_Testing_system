@@ -10,76 +10,62 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Enumeration;
 
 public class TestFormParser {
 
     public static CreateTestForm parse(HttpServletRequest req) {
-        List<String> filteredParams = Collections.list(req.getParameterNames()).stream()
-                .filter(name -> name.startsWith("questionText_") || name.startsWith("answerText_"))
-                .toList();
+        String title = req.getParameter("title");
+        String topic = req.getParameter("topic");
 
-        Map<Integer, String> questionTexts = parseQuestionTexts(filteredParams, req);
-        Map<Integer, List<AnswerOptionForm>> questionAnswers = parseAnswerOptions(filteredParams, req);
-
-        CreateTestForm form = new CreateTestForm();
-        form.setTitle(req.getParameter("title"));
-        form.setTopic(req.getParameter("topic"));
-
-        List<QuestionForm> questions = questionTexts.entrySet().stream()
-                .map(entry -> {
-                    int qId = entry.getKey();
-                    String qText = entry.getValue();
-                    List<AnswerOptionForm> answers = questionAnswers.getOrDefault(qId, Collections.emptyList());
-
-                    QuestionForm question = new QuestionForm();
-                    question.setText(qText);
-                    question.setAnswers(answers);
-                    return question;
-                })
-                .toList();
-
-        form.setQuestions(questions);
-        return form;
-    }
-
-    private static Map<Integer, String> parseQuestionTexts(List<String> filteredParams, HttpServletRequest req) {
         Map<Integer, String> questionTexts = new HashMap<>();
-        for (String name : filteredParams) {
-            if (name.startsWith("questionText_")) {
-                int qIndex = extractIndex(name);
-                String text = req.getParameter(name);
-                questionTexts.put(qIndex, text);
-            }
-        }
-        return questionTexts;
-    }
-
-    private static Map<Integer, List<AnswerOptionForm>> parseAnswerOptions(List<String> filteredParams, HttpServletRequest req) {
         Map<Integer, List<AnswerOptionForm>> questionAnswers = new HashMap<>();
 
-        for (String name : filteredParams) {
+        Enumeration<String> paramNames = req.getParameterNames();
+        while (paramNames.hasMoreElements()) {
+            String name = paramNames.nextElement();
+
+            if (name.startsWith("questionText_")) {
+                int qIndex = extractQuestionIndex(name);
+                String text = req.getParameter(name);
+
+                // Убираем значения вроде "Вопрос 1", если они совпадают с заголовком
+                if (!text.equals("Вопрос " + qIndex)) {
+                    questionTexts.put(qIndex, text);
+                }
+            }
+
             if (name.startsWith("answerText_")) {
-                String[] parts = name.split("_");
-                int qIndex = Integer.parseInt(parts[1]);
-                int aIndex = Integer.parseInt(parts[2]);
+                int qIndex = extractQuestionIndex(name);
+                int aIndex = extractAnswerIndex(name);
 
                 String answerText = req.getParameter(name);
-                String isCorrectStr = req.getParameter("isCorrect_" + qIndex + "_" + aIndex);
-                boolean isCorrect = "on".equals(isCorrectStr);
+                boolean isCorrect = "on".equals(req.getParameter("isCorrect_" + qIndex + "_" + aIndex));
 
-                AnswerOptionForm answer = new AnswerOptionForm();
-                answer.setText(answerText);
-                answer.setCorrect(isCorrect);
-
+                AnswerOptionForm answer = new AnswerOptionForm(aIndex, answerText, isCorrect);
                 questionAnswers.computeIfAbsent(qIndex, k -> new ArrayList<>()).add(answer);
             }
         }
 
-        return questionAnswers;
+        List<QuestionForm> questions = new ArrayList<>();
+        for (Map.Entry<Integer, String> entry : questionTexts.entrySet()) {
+            Integer qId = entry.getKey();
+            String qText = entry.getValue();
+            List<AnswerOptionForm> qAnswers = questionAnswers.getOrDefault(qId, Collections.emptyList());
+
+            questions.add(new QuestionForm(qId, qText, qAnswers));
+        }
+
+        return new CreateTestForm(title, topic, questions);
     }
 
-    private static int extractIndex(String paramName) {
+    private static int extractQuestionIndex(String paramName) {
         String[] parts = paramName.split("_");
         return Integer.parseInt(parts[1]);
+    }
+
+    private static int extractAnswerIndex(String paramName) {
+        String[] parts = paramName.split("_");
+        return Integer.parseInt(parts[2]);
     }
 }

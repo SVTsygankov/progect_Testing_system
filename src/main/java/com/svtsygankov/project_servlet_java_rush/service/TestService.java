@@ -30,4 +30,21 @@ public class TestService {
                 .build();
         testDao.save(test);
     }
+
+    public void updateTest(int id, String title, String topic, List<Question> questions) throws IOException {
+        Test existingTest = testDao.findById(id);
+        if (existingTest == null) {
+            throw new IOException("Тест с ID " + id + " не найден");
+        }
+
+        Test updatedTest = Test.builder()
+                .id(id)
+                .title(title)
+                .topic(topic)
+                .created_by(existingTest.getCreated_by()) // сохраняем оригинального автора
+                .questions(questions)
+                .build();
+
+        testDao.save(updatedTest);
+    }
 }

@@ -1,3 +1,6 @@
+/*
+
+
 package com.svtsygankov.project_servlet_java_rush.servlet;
 
 import com.svtsygankov.project_servlet_java_rush.dao.ResultsDao;
@@ -39,3 +42,5 @@ public class ResultsServlet extends HttpServlet {
         req.getRequestDispatcher("/WEB-INF/views/results.jsp").forward(req, resp);
     }
 }
+
+ */
