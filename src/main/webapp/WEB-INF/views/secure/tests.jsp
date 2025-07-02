@@ -7,7 +7,8 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<jsp:include page="layout.jsp">
-  <jsp:param name="pageTitle" value="Доступгые тесты"/>
+
+<jsp:include page="/WEB-INF/views/layout.jsp">
+  <jsp:param name="pageTitle" value="Доступные тесты"/>
   <jsp:param name="contentPage" value="${contentPage}"/>
 </jsp:include>

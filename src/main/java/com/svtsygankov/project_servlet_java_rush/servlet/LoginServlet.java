@@ -1,10 +1,13 @@
 package com.svtsygankov.project_servlet_java_rush.servlet;
 
+import com.svtsygankov.project_servlet_java_rush.entity.Role;
+import com.svtsygankov.project_servlet_java_rush.entity.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebInitParam;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
@@ -14,14 +17,25 @@ import java.io.IOException;
         })
 public class LoginServlet extends BaseAuthenticationServlet {
 
-      @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
         if (authenticationService.authenticated(req)) {
-           resp.sendRedirect("/secure/tests");
+            HttpSession session = req.getSession();
+            User user = (User) session.getAttribute("user");
+
+            String redirectUrl;
+            if (user.getRole() == Role.ADMIN) {
+                redirectUrl = "/admin/tests";
+            } else {
+                redirectUrl = "/secure/tests";
+            }
+
+            resp.sendRedirect(redirectUrl);
 
         } else {
-            req.setAttribute("contentPage", "/WEB-INF/views/login-form.jsp");
+            req.setAttribute("contentPage", getInitParameter("contentPage"));
             req.getRequestDispatcher(getInitParameter("resourceName")).forward(req, resp);
         }
     }
