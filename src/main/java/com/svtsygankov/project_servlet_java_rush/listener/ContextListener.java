@@ -1,5 +1,7 @@
 package com.svtsygankov.project_servlet_java_rush.listener;
 
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.svtsygankov.project_servlet_java_rush.dao.ResultsDao;
 import com.svtsygankov.project_servlet_java_rush.dao.TestDao;
@@ -22,6 +24,7 @@ public class ContextListener implements ServletContextListener {
     public static final String AUTHENTICATION_SERVICE = "authenticationService";
     public static final String TEST_SERVICE = "testService";
     public static final String RESULTS_SERVICE = "resultsService";
+    public static final String OBJECT_MAPPER ="objectMapper";
     public static final String TESTS_PATH =        "E:\\JavaRush\\Project_servlet_Java_Rush\\src\\main\\resources\\data\\tests";
     public static final String USER_FILE_PATH =    "E:\\JavaRush\\Project_servlet_Java_Rush\\src\\main\\resources\\data\\users\\users.json";
     public static final String RESULTS_FILE_PATH = "E:\\JavaRush\\Project_servlet_Java_Rush\\src\\main\\resources\\data\\results\\results.json";
@@ -48,9 +51,12 @@ public class ContextListener implements ServletContextListener {
         var resultsDao = new ResultsDao(objectMapper, resultsFile);
         var resultsService = new ResultsService(resultsDao);
 
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
         servletContext.setAttribute(AUTHENTICATION_SERVICE, authenticationService);
         servletContext.setAttribute(TEST_SERVICE, testService);
         servletContext.setAttribute(RESULTS_SERVICE, resultsService);
+        servletContext.setAttribute(OBJECT_MAPPER, objectMapper);
 
     }
 }

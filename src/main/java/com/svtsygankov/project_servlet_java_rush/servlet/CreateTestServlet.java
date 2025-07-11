@@ -1,5 +1,6 @@
 package com.svtsygankov.project_servlet_java_rush.servlet;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.svtsygankov.project_servlet_java_rush.dto.CreateTestForm;
 import com.svtsygankov.project_servlet_java_rush.dto.QuestionForm;
 import com.svtsygankov.project_servlet_java_rush.entity.AnswerOption;
@@ -19,17 +20,20 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
+import static com.svtsygankov.project_servlet_java_rush.listener.ContextListener.OBJECT_MAPPER;
 import static com.svtsygankov.project_servlet_java_rush.listener.ContextListener.TEST_SERVICE;
 
 @WebServlet("/admin/test/create")
 public class CreateTestServlet extends HttpServlet {
 
     private TestService testService;
+    private ObjectMapper objectMapper;
 
     @Override
-    public void init(ServletConfig servletConfig) throws ServletException {
-        super.init(servletConfig);
-        testService = (TestService) servletConfig.getServletContext().getAttribute(TEST_SERVICE);
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        testService = (TestService) config.getServletContext().getAttribute(TEST_SERVICE);
+        objectMapper = (ObjectMapper) config.getServletContext().getAttribute(OBJECT_MAPPER);
     }
 
     @Override
@@ -48,7 +52,7 @@ public class CreateTestServlet extends HttpServlet {
         }
 
         try {
-            CreateTestForm form = TestFormParser.parse(req);
+            CreateTestForm form = TestFormParser.parse(req, objectMapper);
             TestFormValidator.validate(form, resp);
 
             List<Question> domainQuestions = form.getQuestions().stream()

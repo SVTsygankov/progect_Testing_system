@@ -23,8 +23,6 @@ public class BaseAuthenticationServlet extends HttpServlet {
         super.init(servletConfig);
         authenticationService =
                 (AuthenticationService) servletConfig.getServletContext().getAttribute(AUTHENTICATION_SERVICE);
-
-        // Получаем имя параметра, где хранится имя формы
         this.contentPage = servletConfig.getInitParameter("contentPage");
     }
 
