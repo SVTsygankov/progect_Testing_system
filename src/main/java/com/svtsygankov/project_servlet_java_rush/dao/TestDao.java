@@ -3,7 +3,7 @@ package com.svtsygankov.project_servlet_java_rush.dao;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.svtsygankov.project_servlet_java_rush.entity.Test;
 import com.svtsygankov.project_servlet_java_rush.entity.Question;
-import com.svtsygankov.project_servlet_java_rush.entity.AnswerOption;
+import com.svtsygankov.project_servlet_java_rush.entity.Answer;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,49 +14,51 @@ public class TestDao {
 
     private final ObjectMapper objectMapper;
     private final File testsDirectory;
-    private final AtomicInteger currentId = new AtomicInteger(0);
+    private AtomicInteger testIdCounter;
 
     public TestDao(ObjectMapper objectMapper, File testsDirectory) throws IOException {
 
         this.objectMapper = objectMapper;
         this.testsDirectory = testsDirectory;
+        initialize();
 
+    }
+
+    private void initialize() {
+        // Создаем директорию, если не существует
         if (!testsDirectory.exists()) {
             testsDirectory.mkdirs();
         }
 
-        initCurrentId();
+        // Инициализируем счетчик
+        this.testIdCounter = new AtomicInteger(calculateMaxTestId() + 1);
     }
 
-    private void initCurrentId() throws IOException {
-        List<Test> tests = findAll();
-        if (!tests.isEmpty()) {
-            int maxId = tests.stream()
-                    .mapToInt(Test::getId)
-                    .max()
-                    .getAsInt();
+    private int calculateMaxTestId() {
+        File[] testFiles = testsDirectory.listFiles((dir, name) ->
+                name.startsWith("test_") && name.endsWith(".json"));
 
-            currentId.set(maxId);
+        if (testFiles == null) return 0;
+
+        int maxId = 0;
+        for (File file : testFiles) {
+            try {
+                String idStr = file.getName()
+                        .replace("test_", "")
+                        .replace(".json", "");
+                int id = Integer.parseInt(idStr);
+                if (id > maxId) maxId = id;
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid test filename: " + file.getName());
+            }
         }
+        return maxId;
     }
 
     public int getNextId() {
-        return currentId.incrementAndGet();
+        return testIdCounter.getAndIncrement();
     }
 
-    public int getNextQuestionId(Test test) {
-        return test.getQuestions().stream()
-                .mapToInt(Question::getId)
-                .max()
-                .orElse(0) + 1;
-    }
-
-    public int getNextAnswerId(Question question) {
-        return question.getAnswers().stream()
-                .mapToInt(AnswerOption::getId)
-                .max()
-                .orElse(0) + 1;
-    }
      public List<Test> findAll() throws IOException {
         List<Test> tests = new ArrayList<>();
 
@@ -94,10 +96,11 @@ public class TestDao {
                 .toList();
     }
 
+
     public void save(Test test) throws IOException {
         String filename = "test" + test.getId() + ".json";
-        File fileToSave = new File(testsDirectory, filename);
-        objectMapper.writeValue(fileToSave, test);
+        File testFile = new File(testsDirectory, filename);
+        objectMapper.writeValue(testFile, test);
     }
 
     public boolean deleteById(int id) throws IOException {
@@ -111,9 +114,17 @@ public class TestDao {
         return fileToDelete.delete();
     }
 
-    // Вспомогательный метод: извлекает ID из имени файла test123.json
-    private Integer extractTestId(File file) {
-        String name = file.getName();
-        return Integer.parseInt(name.replaceAll("[^\\d]", ""));
+    public int getNextQuestionId(Test test) {
+        return test.getQuestions().stream()
+                .mapToInt(Question::getId)
+                .max()
+                .orElse(0) + 1;
+    }
+
+    public int getNextAnswerId(Question question) {
+        return question.getAnswers().stream()
+                .mapToInt(Answer::getId)
+                .max()
+                .orElse(0) + 1;
     }
 }

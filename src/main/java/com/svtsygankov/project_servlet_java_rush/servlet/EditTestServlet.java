@@ -1,10 +1,8 @@
 package com.svtsygankov.project_servlet_java_rush.servlet;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.svtsygankov.project_servlet_java_rush.dto.CreateTestForm;
-import com.svtsygankov.project_servlet_java_rush.dto.QuestionForm;
-import com.svtsygankov.project_servlet_java_rush.entity.AnswerOption;
+import com.svtsygankov.project_servlet_java_rush.entity.Answer;
 import com.svtsygankov.project_servlet_java_rush.entity.Question;
 import com.svtsygankov.project_servlet_java_rush.entity.Test;
 import com.svtsygankov.project_servlet_java_rush.entity.User;
@@ -88,7 +86,7 @@ public class EditTestServlet extends HttpServlet {
                                 q.getId(),
                                 q.getText(),
                                 q.getAnswers().stream()
-                                        .map(a -> new AnswerOption(a.getId(), a.getText(), a.isCorrect()))
+                                        .map(a -> new Answer(a.getId(), a.getText(), a.isCorrect()))
                                         .toList()
                         ))
                         .toList()
