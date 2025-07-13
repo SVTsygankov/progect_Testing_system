@@ -2,6 +2,8 @@ package com.svtsygankov.project_servlet_java_rush.dao;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.svtsygankov.project_servlet_java_rush.entity.Test;
+import com.svtsygankov.project_servlet_java_rush.entity.Question;
+import com.svtsygankov.project_servlet_java_rush.entity.AnswerOption;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,6 +44,19 @@ public class TestDao {
         return currentId.incrementAndGet();
     }
 
+    public int getNextQuestionId(Test test) {
+        return test.getQuestions().stream()
+                .mapToInt(Question::getId)
+                .max()
+                .orElse(0) + 1;
+    }
+
+    public int getNextAnswerId(Question question) {
+        return question.getAnswers().stream()
+                .mapToInt(AnswerOption::getId)
+                .max()
+                .orElse(0) + 1;
+    }
      public List<Test> findAll() throws IOException {
         List<Test> tests = new ArrayList<>();
 

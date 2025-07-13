@@ -55,7 +55,7 @@ public class CreateTestServlet extends HttpServlet {
             CreateTestForm form = TestFormParser.parse(req, objectMapper);
             TestFormValidator.validate(form, resp);
 
-            List<Question> domainQuestions = form.getQuestions().stream()
+            List<Question> questions = form.getQuestions().stream()
                     .map(this::convertToDomain)
                     .toList();
 
@@ -63,7 +63,7 @@ public class CreateTestServlet extends HttpServlet {
                     form.getTitle(),
                     form.getTopic(),
                     currentUser.getId(),
-                    domainQuestions
+                    questions
             );
 
             resp.sendRedirect(req.getContextPath() + "/tests");
