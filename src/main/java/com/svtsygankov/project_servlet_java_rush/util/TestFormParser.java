@@ -1,7 +1,7 @@
 package com.svtsygankov.project_servlet_java_rush.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.svtsygankov.project_servlet_java_rush.dto.CreateTestForm;
+import com.svtsygankov.project_servlet_java_rush.dto.TestForm;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -9,7 +9,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 public class TestFormParser {
-    public static CreateTestForm parse(HttpServletRequest req, ObjectMapper objectMapper)
+    public static TestForm parse(HttpServletRequest req, ObjectMapper objectMapper)
             throws IOException {
 
         // Читаем тело запроса
@@ -26,6 +26,6 @@ public class TestFormParser {
             throw new IllegalArgumentException("Отсутствуют данные теста");
         }
 
-        return objectMapper.readValue(json, CreateTestForm.class);
+        return objectMapper.readValue(json, TestForm.class);
     }
 }

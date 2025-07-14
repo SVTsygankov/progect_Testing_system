@@ -2,8 +2,6 @@ package com.svtsygankov.project_servlet_java_rush.dao;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.svtsygankov.project_servlet_java_rush.entity.Test;
-import com.svtsygankov.project_servlet_java_rush.entity.Question;
-import com.svtsygankov.project_servlet_java_rush.entity.Answer;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -96,7 +94,6 @@ public class TestDao {
                 .toList();
     }
 
-
     public void save(Test test) throws IOException {
         String filename = "test" + test.getId() + ".json";
         File testFile = new File(testsDirectory, filename);
@@ -112,19 +109,5 @@ public class TestDao {
         }
 
         return fileToDelete.delete();
-    }
-
-    public int getNextQuestionId(Test test) {
-        return test.getQuestions().stream()
-                .mapToInt(Question::getId)
-                .max()
-                .orElse(0) + 1;
-    }
-
-    public int getNextAnswerId(Question question) {
-        return question.getAnswers().stream()
-                .mapToInt(Answer::getId)
-                .max()
-                .orElse(0) + 1;
     }
 }

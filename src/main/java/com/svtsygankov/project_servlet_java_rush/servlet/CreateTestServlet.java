@@ -1,8 +1,7 @@
 package com.svtsygankov.project_servlet_java_rush.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.svtsygankov.project_servlet_java_rush.dto.CreateTestForm;
-import com.svtsygankov.project_servlet_java_rush.dto.QuestionForm;
+import com.svtsygankov.project_servlet_java_rush.dto.TestForm;
 import com.svtsygankov.project_servlet_java_rush.entity.Answer;
 import com.svtsygankov.project_servlet_java_rush.entity.User;
 import com.svtsygankov.project_servlet_java_rush.service.TestService;
@@ -52,12 +51,10 @@ public class CreateTestServlet extends HttpServlet {
         }
 
         try {
-            CreateTestForm form = TestFormParser.parse(req, objectMapper);
+            TestForm form = TestFormParser.parse(req, objectMapper);
             TestFormValidator.validate(form, resp);
 
-            List<Question> questions = form.getQuestions().stream()
-                    .map(this::convertToDomain)
-                    .toList();
+            List<Question> questions = form.getQuestions();
 
             testService.createTest(
                     form.getTitle(),
@@ -71,13 +68,5 @@ public class CreateTestServlet extends HttpServlet {
         } catch (Exception e) {
             throw new IOException("Ошибка при сохранении теста", e);
         }
-    }
-
-    private Question convertToDomain(QuestionForm formQuestion) {
-        List<Answer> answers = formQuestion.getAnswers().stream()
-                .map(a -> new Answer(a.getId(), a.getText(), a.isCorrect()))
-                .toList();
-
-        return new Question(formQuestion.getId(), formQuestion.getText(), answers);
     }
 }

@@ -1,7 +1,7 @@
 package com.svtsygankov.project_servlet_java_rush.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.svtsygankov.project_servlet_java_rush.dto.CreateTestForm;
+import com.svtsygankov.project_servlet_java_rush.dto.TestForm;
 import com.svtsygankov.project_servlet_java_rush.entity.Answer;
 import com.svtsygankov.project_servlet_java_rush.entity.Question;
 import com.svtsygankov.project_servlet_java_rush.entity.Test;
@@ -57,7 +57,7 @@ public class EditTestServlet extends HttpServlet {
 
         try {
             // Парсинг данных формы
-            CreateTestForm form = TestFormParser.parse(req, objectMapper);
+            TestForm form = TestFormParser.parse(req, objectMapper);
 
             // Валидация
             TestFormValidator.validate(form, resp);
@@ -73,7 +73,7 @@ public class EditTestServlet extends HttpServlet {
         }
     }
 
-    private Test convertToDomain(CreateTestForm form, HttpServletRequest req) {
+    private Test convertToDomain(TestForm form, HttpServletRequest req) {
         User currentUser = (User) req.getSession().getAttribute("user");
 
         return new Test(

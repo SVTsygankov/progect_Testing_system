@@ -20,15 +20,19 @@ public class TestService {
         return testDao.findById(id);
     }
 
-    public void createTest(String title, String topic, Long createdById, List<Question> questions) throws IOException {
+    public Test createTest(String title, String topic, Long authorId,
+                       List<Question> questions) throws IOException {
+
+
         Test test = Test.builder()
-                .id(testDao.getNextId())
-                .title(title)
-                .topic(topic)
-                .created_by(createdById)
-                .questions(questions)
-                .build();
+                    .id(testDao.getNextId())
+                    .title(title)
+                    .topic(topic)
+                    .created_by(authorId)
+                    .questions(questions)
+                    .build();
         testDao.save(test);
+        return test;
     }
 
     public void updateTest(Test test) throws IOException {
