@@ -1,6 +1,7 @@
 package com.svtsygankov.project_servlet_java_rush.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.svtsygankov.project_servlet_java_rush.dto.TestCreationRequest;
 import com.svtsygankov.project_servlet_java_rush.dto.TestForm;
 import com.svtsygankov.project_servlet_java_rush.entity.Answer;
 import com.svtsygankov.project_servlet_java_rush.entity.User;
@@ -51,7 +52,7 @@ public class CreateTestServlet extends HttpServlet {
         }
 
         try {
-            TestForm form = TestFormParser.parse(req, objectMapper);
+            TestCreationRequest form = TestFormParser.parse(req, objectMapper);
             TestFormValidator.validate(form, resp);
 
             List<Question> questions = form.getQuestions();
