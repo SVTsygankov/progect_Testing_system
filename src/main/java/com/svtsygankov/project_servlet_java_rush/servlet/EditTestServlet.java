@@ -2,10 +2,7 @@ package com.svtsygankov.project_servlet_java_rush.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.svtsygankov.project_servlet_java_rush.dto.TestForm;
-import com.svtsygankov.project_servlet_java_rush.entity.Answer;
-import com.svtsygankov.project_servlet_java_rush.entity.Question;
 import com.svtsygankov.project_servlet_java_rush.entity.Test;
-import com.svtsygankov.project_servlet_java_rush.entity.User;
 import com.svtsygankov.project_servlet_java_rush.service.TestService;
 import com.svtsygankov.project_servlet_java_rush.util.TestFormParser;
 import com.svtsygankov.project_servlet_java_rush.util.TestFormValidator;
@@ -58,12 +55,18 @@ public class EditTestServlet extends HttpServlet {
         try {
             // Парсинг данных формы
             TestForm form = TestFormParser.parse(req, objectMapper);
-
             // Валидация
-            TestFormValidator.validate(form, resp);
-
+            TestFormValidator.validateForUpdate(form, resp);
+            // Получаем текущий тест для сохранения created_by
+            Test existingTest = testService.findById(form.getId());
             // Обновление теста
-            testService.updateTest(convertToDomain(form, req));
+            Test updatedTest = Test.builder()
+                    .id(form.getId())
+                    .title(form.getTitle())
+                    .topic(form.getTopic())
+                    .created_by(existingTest.getCreated_by())
+                    .questions(form.getQuestions())
+                    .build();
 
             // Редирект после успешного сохранения
             resp.sendRedirect(req.getContextPath() + "/admin/tests");
@@ -71,25 +74,5 @@ public class EditTestServlet extends HttpServlet {
         } catch (Exception e) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Ошибка: " + e.getMessage());
         }
-    }
-
-    private Test convertToDomain(TestForm form, HttpServletRequest req) {
-        User currentUser = (User) req.getSession().getAttribute("user");
-
-        return new Test(
-                form.getId(),
-                form.getTitle(),
-                form.getTopic(),
-                currentUser.getId(),
-                form.getQuestions().stream()
-                        .map(q -> new Question(
-                                q.getId(),
-                                q.getText(),
-                                q.getAnswers().stream()
-                                        .map(a -> new Answer(a.getId(), a.getText(), a.isCorrect()))
-                                        .toList()
-                        ))
-                        .toList()
-        );
     }
 }
