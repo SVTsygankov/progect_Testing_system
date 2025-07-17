@@ -34,7 +34,7 @@ public class TestDao {
 
     private int calculateMaxTestId() {
         File[] testFiles = testsDirectory.listFiles((dir, name) ->
-                name.startsWith("test_") && name.endsWith(".json"));
+                name.startsWith("test") && name.endsWith(".json"));
 
         if (testFiles == null) return 0;
 
@@ -42,7 +42,7 @@ public class TestDao {
         for (File file : testFiles) {
             try {
                 String idStr = file.getName()
-                        .replace("test_", "")
+                        .replace("test", "")
                         .replace(".json", "");
                 int id = Integer.parseInt(idStr);
                 if (id > maxId) maxId = id;

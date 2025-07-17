@@ -22,8 +22,7 @@ public class TestService {
 
     public Test createTest(String title, String topic, Long authorId,
                        List<Question> questions) throws IOException {
-
-
+        System.out.println("Создаем новый тест");
         Test test = Test.builder()
                     .id(testDao.getNextId())
                     .title(title)

@@ -10,50 +10,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Create New Test</title>
+  <title>Создание теста</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <style>
-    /* Стили из edit-test.gsp */
-    .test-form { margin: 20px; }
-    .question-block { margin-bottom: 20px; border: 1px solid #ddd; padding: 10px; }
-    .answer-block { margin-left: 20px; margin-bottom: 10px; }
-    .correct-answer { background-color: #f0fff0; }
+    .question-block {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      border: 1px solid #dee2e6;
+    }
+    .answer-block {
+      margin-left: 20px;
+      margin-bottom: 10px;
+    }
+    .correct-answer {
+      background-color: #e8f5e9;
+    }
   </style>
 </head>
 <body>
-<div class="test-form">
-  <h1>Create New Test</h1>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" href="#">Тестовая система</a>
+  </div>
+</nav>
 
-  <form id="testForm" action="/admin/test/create" method="post">
-    <div>
-      <label for="title">Test Title:</label>
-      <input type="text" id="title" name="title" required>
+<div class="container mt-4">
+  <h1 class="mb-4">Создание нового теста</h1>
+
+  <form id="testForm">
+    <div class="mb-3">
+      <label for="title" class="form-label">Название теста:</label>
+      <input type="text" class="form-control" id="title" name="title" required>
     </div>
 
-    <div>
-      <label for="topic">Topic:</label>
-      <input type="text" id="topic" name="topic">
+    <div class="mb-3">
+      <label for="topic" class="form-label">Тема:</label>
+      <input type="text" class="form-control" id="topic" name="topic">
     </div>
 
-    <div id="questionsContainer">
-      <!-- Questions will be added here dynamically -->
-    </div>
+    <div id="questionsContainer" class="mb-4"></div>
 
-    <button type="button" onclick="addQuestion()">Add Question</button>
-    <button type="submit">Save Test</button>
+    <div class="mb-3">
+      <button type="button" class="btn btn-primary" onclick="addQuestion()">Добавить вопрос</button>
+      <button type="submit" class="btn btn-success">Сохранить тест</button>
+    </div>
   </form>
 </div>
 
+<footer class="bg-dark text-white mt-5 py-3">
+  <div class="container text-center">
+    &copy; 2023 Тестовая система
+  </div>
+</footer>
+
 <script>
-  // Question counter
   var questionCounter = 0;
-
-  // Answer counters per question
   var answerCounters = {};
-
-  // Initialize with one question
-  window.onload = function() {
-    addQuestion();
-  };
 
   function addQuestion() {
     questionCounter++;
@@ -65,31 +79,38 @@
     questionDiv.id = 'question-' + questionCounter;
 
     questionDiv.innerHTML =
-            '<h3>Question ' + questionCounter + '</h3>' +
-            '<textarea name="questions[' + (questionCounter-1) + '].text" required></textarea>' +
+            '<h3>Вопрос ' + questionCounter + '</h3>' +
+            '<textarea class="form-control mb-3" name="questions[' + (questionCounter-1) + '].text" required></textarea>' +
             '<div id="answers-' + questionCounter + '"></div>' +
-            '<button type="button" onclick="addAnswer(' + questionCounter + ')">Add Answer</button>' +
-            '<button type="button" onclick="removeQuestion(' + questionCounter + ')">Remove Question</button>';
+            '<button type="button" class="btn btn-sm btn-primary me-2" onclick="addAnswer(' + questionCounter + ')">Добавить ответ</button>' +
+            '<button type="button" class="btn btn-sm btn-danger" onclick="removeQuestion(' + questionCounter + ')">Удалить вопрос</button>';
 
     container.appendChild(questionDiv);
+
+    // Добавляем сразу 2 ответа
     addAnswer(questionCounter);
     addAnswer(questionCounter);
   }
 
   function addAnswer(questionId) {
-    answerCounters[questionId]++;
+    answerCounters[questionId] = (answerCounters[questionId] || 0) + 1;
     var answerId = answerCounters[questionId];
     var container = document.getElementById('answers-' + questionId);
     var answerDiv = document.createElement('div');
     answerDiv.className = 'answer-block';
 
     answerDiv.innerHTML =
-            '<input type="checkbox" name="questions[' + (questionId-1) + '].answers[' + (answerId-1) + '].isCorrect"> ' +
-            '<input type="text" name="questions[' + (questionId-1) + '].answers[' + (answerId-1) + '].text" required>';
+            '<div class="input-group mb-2">' +
+            '   <div class="input-group-text">' +
+            '       <input type="checkbox" name="questions[' + (questionId-1) + '].answers[' + (answerId-1) + '].isCorrect">' +
+            '   </div>' +
+            '   <input type="text" class="form-control" name="questions[' + (questionId-1) + '].answers[' + (answerId-1) + '].text" required>' +
+            '   <button type="button" class="btn btn-outline-danger" onclick="removeAnswer(this)">×</button>' +
+            '</div>';
 
     container.appendChild(answerDiv);
 
-    // Add correct-answer class when checkbox is checked
+    // Обработчик для подсветки правильного ответа
     var checkbox = answerDiv.querySelector('input[type="checkbox"]');
     checkbox.onchange = function() {
       if (this.checked) {
@@ -100,57 +121,98 @@
     };
   }
 
+  function removeAnswer(button) {
+    button.closest('.answer-block').remove();
+  }
+
   function removeQuestion(questionId) {
     if (questionCounter <= 1) {
-      alert("Test must have at least one question");
+      alert("Тест должен содержать хотя бы один вопрос");
       return;
     }
 
     var questionDiv = document.getElementById('question-' + questionId);
     questionDiv.parentNode.removeChild(questionDiv);
-    delete answerCounters[questionId];
     questionCounter--;
-
-    // Reindex remaining questions
-    var questions = document.querySelectorAll('[id^="question-"]');
-    for (var i = 0; i < questions.length; i++) {
-      var newId = i + 1;
-      questions[i].id = 'question-' + newId;
-      questions[i].querySelector('h3').textContent = 'Question ' + newId;
-
-      // Update all names in inputs
-      var textarea = questions[i].querySelector('textarea');
-      textarea.name = 'questions[' + i + '].text';
-
-      var answerDivs = questions[i].querySelectorAll('.answer-block');
-      for (var j = 0; j < answerDivs.length; j++) {
-        var inputs = answerDivs[j].querySelectorAll('input');
-        inputs[0].name = 'questions[' + i + '].answers[' + j + '].isCorrect';
-        inputs[1].name = 'questions[' + i + '].answers[' + j + '].text';
-      }
-    }
   }
 
-  document.getElementById('testForm').onsubmit = function() {
-    // Validate at least one correct answer per question
-    var questions = document.querySelectorAll('.question-block');
-    for (var i = 0; i < questions.length; i++) {
-      var checkboxes = questions[i].querySelectorAll('input[type="checkbox"]');
-      var hasChecked = false;
+  document.getElementById('testForm').onsubmit = function(e) {
+    e.preventDefault();
 
-      for (var j = 0; j < checkboxes.length; j++) {
-        if (checkboxes[j].checked) {
-          hasChecked = true;
+    var formData = {
+      title: document.getElementById('title').value,
+      topic: document.getElementById('topic').value,
+      questions: []
+    };
+
+    var isValid = true;
+    var questionBlocks = document.querySelectorAll('.question-block');
+
+    for (var i = 0; i < questionBlocks.length; i++) {
+      var questionBlock = questionBlocks[i];
+      var questionText = questionBlock.querySelector('textarea').value;
+      var questionData = {
+        text: questionText,
+        answers: []
+      };
+
+      if (!questionText.trim()) {
+        alert('Вопрос ' + (i+1) + ': текст вопроса не может быть пустым');
+        isValid = false;
+        break;
+      }
+
+      var answerBlocks = questionBlock.querySelectorAll('.answer-block');
+      var hasCorrectAnswer = false;
+
+      for (var j = 0; j < answerBlocks.length; j++) {
+        var answerBlock = answerBlocks[j];
+        var answerText = answerBlock.querySelector('input[type="text"]').value;
+        var isCorrect = answerBlock.querySelector('input[type="checkbox"]').checked;
+
+        if (!answerText.trim()) {
+          alert('Вопрос ' + (i+1) + ', ответ ' + (j+1) + ': текст ответа не может быть пустым');
+          isValid = false;
           break;
         }
+
+        if (isCorrect) hasCorrectAnswer = true;
+
+        questionData.answers.push({
+          text: answerText,
+          isCorrect: isCorrect
+        });
       }
 
-      if (!hasChecked) {
-        alert('Each question must have at least one correct answer');
-        return false;
+      if (!isValid) break;
+
+      if (!hasCorrectAnswer) {
+        alert('Вопрос ' + (i+1) + ' должен иметь хотя бы один правильный ответ');
+        isValid = false;
+        break;
       }
+
+      formData.questions.push(questionData);
     }
-    return true;
+
+    if (!isValid) return;
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/admin/test/create', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onload = function() {
+      if (xhr.status === 201) {
+        window.location.href = '/admin/tests';
+      } else {
+        alert('Ошибка: ' + xhr.responseText);
+      }
+    };
+    xhr.send(JSON.stringify(formData));
+  };
+
+  // Инициализация первого вопроса при загрузке
+  window.onload = function() {
+    addQuestion();
   };
 </script>
 </body>

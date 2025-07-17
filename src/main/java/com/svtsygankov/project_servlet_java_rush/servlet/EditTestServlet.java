@@ -68,6 +68,8 @@ public class EditTestServlet extends HttpServlet {
                     .questions(form.getQuestions())
                     .build();
 
+            testService.updateTest(updatedTest);
+
             // Редирект после успешного сохранения
             resp.sendRedirect(req.getContextPath() + "/admin/tests");
 
