@@ -177,9 +177,15 @@
         // Рендеринг ответов
         if (question.answers && question.answers.length > 0) {
           question.answers.forEach(function(answer, aIndex) {
+            console.log("Answer data:", answer);
+
             var answerNumber = aIndex + 1;
             var answerDiv = document.createElement('div');
             answerDiv.className = 'answer-item';
+
+            if (answer.isCorrect) {
+              answerDiv.classList.add('correct-answer');
+            }
 
             var answerLabel = document.createElement('label');
             answerLabel.innerHTML = '<span class="answer-number">Ответ ' + answerNumber + ':</span>';
@@ -187,22 +193,31 @@
             var answerInput = document.createElement('input');
             answerInput.type = 'text';
             answerInput.value = answer.text || '';
-            answerInput.placeholder = "Введите текст ответа";
 
             var checkboxLabel = document.createElement('label');
             checkboxLabel.style.marginLeft = '10px';
+
             var checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
-            checkbox.checked = answer.correct;
+            checkbox.checked = answer.isCorrect;
             checkbox.style.marginRight = '5px';
+
+            checkbox.addEventListener('change', function(e) {
+              answer.isCorrect = e.target.checked;
+              if (e.target.checked) {
+                answerDiv.classList.add('correct-answer');
+              } else {
+                answerDiv.classList.remove('correct-answer');
+              }
+            });
+
             checkboxLabel.appendChild(checkbox);
             checkboxLabel.appendChild(document.createTextNode('Правильный ответ'));
 
             var deleteBtn = document.createElement('button');
             deleteBtn.type = 'button';
-            deleteBtn.className = 'delete-answer-btn delete-btn';
+            deleteBtn.className = 'delete-btn';
             deleteBtn.textContent = 'Удалить';
-            deleteBtn.style.marginLeft = '10px';
 
             answerDiv.appendChild(answerLabel);
             answerDiv.appendChild(answerInput);
@@ -210,22 +225,6 @@
             answerDiv.appendChild(deleteBtn);
 
             answerContainer.appendChild(answerDiv);
-
-            // Обработчики событий для ответов
-            answerInput.addEventListener('input', function(e) {
-              answer.text = e.target.value;
-            });
-
-            checkbox.addEventListener('change', function(e) {
-              answer.correct = e.target.checked;
-            });
-
-            deleteBtn.addEventListener('click', function() {
-              if (confirm('Удалить этот ответ?')) {
-                question.answers.splice(aIndex, 1);
-                renderQuestions();
-              }
-            });
           });
         }
 
