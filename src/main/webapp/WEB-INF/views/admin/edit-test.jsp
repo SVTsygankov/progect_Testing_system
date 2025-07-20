@@ -129,6 +129,7 @@
   document.addEventListener('DOMContentLoaded', function() {
     // Инициализация данных теста
     var testState = JSON.parse('<%= testJson %>');
+    console.log("Initial test state:", testState); // Отладочный вывод
 
     // Функция рендеринга вопросов и ответов
     function renderQuestions() {
@@ -144,6 +145,7 @@
         var questionNumber = qIndex + 1;
         var questionDiv = document.createElement('div');
         questionDiv.className = 'question-block';
+        questionDiv.dataset.questionIndex = qIndex; // Сохраняем индекс вопроса
 
         var questionLabel = document.createElement('label');
         questionLabel.innerHTML = '<span class="question-number">Вопрос ' + questionNumber + ':</span>';
@@ -152,6 +154,7 @@
         textarea.rows = 3;
         textarea.value = question.text || '';
         textarea.placeholder = "Введите текст вопроса";
+        textarea.dataset.questionId = qIndex; // Связываем с вопросом
 
         var answerContainer = document.createElement('div');
         answerContainer.className = 'answer-block';
@@ -160,39 +163,37 @@
         addAnswerBtn.type = 'button';
         addAnswerBtn.className = 'add-answer-btn';
         addAnswerBtn.textContent = '+ Добавить ответ';
+        addAnswerBtn.dataset.questionId = qIndex;
 
         var deleteQuestionBtn = document.createElement('button');
         deleteQuestionBtn.type = 'button';
         deleteQuestionBtn.className = 'delete-question-btn delete-btn';
         deleteQuestionBtn.textContent = 'Удалить вопрос';
 
-        questionDiv.appendChild(questionLabel);
-        questionDiv.appendChild(textarea);
-        questionDiv.appendChild(answerContainer);
-        questionDiv.appendChild(addAnswerBtn);
-        questionDiv.appendChild(deleteQuestionBtn);
-
-        container.appendChild(questionDiv);
-
         // Рендеринг ответов
         if (question.answers && question.answers.length > 0) {
           question.answers.forEach(function(answer, aIndex) {
-            console.log("Answer data:", answer);
-
-            var answerNumber = aIndex + 1;
             var answerDiv = document.createElement('div');
             answerDiv.className = 'answer-item';
+            answerDiv.dataset.answerIndex = aIndex;
 
             if (answer.isCorrect) {
               answerDiv.classList.add('correct-answer');
             }
 
             var answerLabel = document.createElement('label');
-            answerLabel.innerHTML = '<span class="answer-number">Ответ ' + answerNumber + ':</span>';
+            answerLabel.innerHTML = '<span class="answer-number">Ответ ' + (aIndex + 1) + ':</span>';
 
             var answerInput = document.createElement('input');
             answerInput.type = 'text';
             answerInput.value = answer.text || '';
+            answerInput.placeholder = "Введите текст ответа";
+            answerInput.required = true;
+            answerInput.dataset.answerIndex = aIndex;
+
+            answerInput.addEventListener('input', function(e) {
+              question.answers[aIndex].text = e.target.value;
+            });
 
             var checkboxLabel = document.createElement('label');
             checkboxLabel.style.marginLeft = '10px';
@@ -201,14 +202,11 @@
             checkbox.type = 'checkbox';
             checkbox.checked = answer.isCorrect;
             checkbox.style.marginRight = '5px';
+            checkbox.dataset.answerIndex = aIndex;
 
             checkbox.addEventListener('change', function(e) {
-              answer.isCorrect = e.target.checked;
-              if (e.target.checked) {
-                answerDiv.classList.add('correct-answer');
-              } else {
-                answerDiv.classList.remove('correct-answer');
-              }
+              question.answers[aIndex].isCorrect = e.target.checked;
+              answerDiv.classList.toggle('correct-answer', e.target.checked);
             });
 
             checkboxLabel.appendChild(checkbox);
@@ -218,6 +216,19 @@
             deleteBtn.type = 'button';
             deleteBtn.className = 'delete-btn';
             deleteBtn.textContent = 'Удалить';
+            deleteBtn.dataset.answerIndex = aIndex;
+
+            deleteBtn.addEventListener('click', function() {
+              if (question.answers.length <= 1) {
+                alert("Должен остаться хотя бы один ответ!");
+                return;
+              }
+
+              if (confirm('Удалить этот ответ?')) {
+                question.answers.splice(aIndex, 1);
+                renderQuestions(); // Полная перерисовка после удаления
+              }
+            });
 
             answerDiv.appendChild(answerLabel);
             answerDiv.appendChild(answerInput);
@@ -228,64 +239,86 @@
           });
         }
 
-        // Обработчики событий для вопросов
+        // Обработчики для вопросов
         textarea.addEventListener('input', function(e) {
-          question.text = e.target.value;
+          testState.questions[qIndex].text = e.target.value;
         });
 
         addAnswerBtn.addEventListener('click', function() {
-          if (!question.answers) question.answers = [];
-          question.answers.push({
+          if (!testState.questions[qIndex].answers) {
+            testState.questions[qIndex].answers = [];
+          }
+
+          testState.questions[qIndex].answers.push({
             id: Date.now(),
-            text: "Новый ответ",
-            correct: false
+            text: "",
+            isCorrect: false
           });
+
           renderQuestions();
         });
 
         deleteQuestionBtn.addEventListener('click', function() {
-          if (confirm('Удалить этот вопрос?')) {
+          if (testState.questions.length <= 1) {
+            alert("Тест должен содержать хотя бы один вопрос!");
+            return;
+          }
+
+          if (confirm('Удалить этот вопрос и все ответы в нём?')) {
             testState.questions.splice(qIndex, 1);
             renderQuestions();
           }
         });
+
+        questionDiv.appendChild(questionLabel);
+        questionDiv.appendChild(textarea);
+        questionDiv.appendChild(answerContainer);
+        questionDiv.appendChild(addAnswerBtn);
+        questionDiv.appendChild(deleteQuestionBtn);
+
+        container.appendChild(questionDiv);
       });
     }
 
-    // Добавление нового вопроса
-    document.getElementById('test-form').addEventListener('submit', function(e) {
-      e.preventDefault();
+    // Обработчик добавления нового вопроса
+    document.getElementById('add-question-btn').addEventListener('click', function() {
+      if (!testState.questions) {
+        testState.questions = [];
+      }
 
-      testState.title = document.getElementById('test-title').value;
-      testState.topic = document.getElementById('test-topic').value;
+      testState.questions.push({
+        text: "",
+        answers: []
+      });
 
-      fetch('/admin/test/edit', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(testState)  // Отправляем весь объект testState
-      })
-              .then(function(response) {
-                if (response.ok) {
-                  window.location.href = '/admin/tests';
-                } else {
-                  alert('Ошибка при сохранении теста');
-                }
-              })
-              .catch(function(error) {
-                console.error('Error:', error);
-                alert('Произошла ошибка при отправке данных');
-              });
+      renderQuestions();
     });
 
-    // Отправка формы
+    // Обработчик отправки формы
     document.getElementById('test-form').addEventListener('submit', function(e) {
       e.preventDefault();
 
+      // Проверка на пустые вопросы
+      const hasEmptyQuestions = testState.questions.some(q => !q.text.trim());
+      if (hasEmptyQuestions) {
+        alert("Все вопросы должны содержать текст!");
+        return;
+      }
+
+      // Проверка на пустые ответы
+      const hasEmptyAnswers = testState.questions.some(q =>
+              q.answers && q.answers.some(a => !a.text.trim())
+      );
+      if (hasEmptyAnswers) {
+        alert("Все ответы должны содержать текст!");
+        return;
+      }
+
+      // Обновляем title и topic
       testState.title = document.getElementById('test-title').value;
       testState.topic = document.getElementById('test-topic').value;
 
+      // Отправка данных
       fetch('/admin/test/edit', {
         method: 'POST',
         headers: {
@@ -297,12 +330,12 @@
                 if (response.ok) {
                   window.location.href = '/admin/tests';
                 } else {
-                  alert('Ошибка при сохранении теста');
+                  return response.text().then(text => { throw new Error(text) });
                 }
               })
               .catch(function(error) {
                 console.error('Error:', error);
-                alert('Произошла ошибка при отправке данных');
+                alert('Ошибка при сохранении: ' + error.message);
               });
     });
 
@@ -310,5 +343,6 @@
     renderQuestions();
   });
 </script>
+
 </body>
 </html>

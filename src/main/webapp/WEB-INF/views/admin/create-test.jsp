@@ -201,7 +201,7 @@
     xhr.open('POST', '/admin/test/create', true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onload = function() {
-      if (xhr.status === 201) {
+      if (xhr.status === 200) {
         window.location.href = '/admin/tests';
       } else {
         alert('Ошибка: ' + xhr.responseText);

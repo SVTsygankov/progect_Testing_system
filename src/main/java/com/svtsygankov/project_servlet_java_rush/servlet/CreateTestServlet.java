@@ -57,7 +57,6 @@ public class CreateTestServlet extends HttpServlet {
                     currentUser.getId(),
                     form.getQuestions()
             );
-
             resp.sendRedirect(req.getContextPath() + "/admin/tests");
 
         } catch (IOException e) {
