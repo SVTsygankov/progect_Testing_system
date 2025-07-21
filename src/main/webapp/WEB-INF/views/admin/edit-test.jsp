@@ -36,10 +36,24 @@
     .form-group {
       margin-bottom: 15px;
     }
+    .is-invalid {
+      border-color: #dc3545 !important;
+    }
+
     .error-message {
-      color: #f44336;
-      font-size: 12px;
-      margin-top: 5px;
+      color: #dc3545;
+      font-size: 0.875em;
+      margin-top: 0.25rem;
+    }
+
+    .alert-danger {
+      color: #721c24;
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+      padding: 0.75rem 1.25rem;
+      margin-bottom: 1rem;
+      border: 1px solid transparent;
+      border-radius: 0.25rem;
     }
     .question-block {
       border: 1px solid #ddd;
@@ -285,45 +299,71 @@
       });
     }
 
-    // Обработчик добавления нового вопроса
-    document.getElementById('add-question-btn').addEventListener('click', function() {
-      if (!testState.questions) {
-        testState.questions = [];
-      }
-
-      testState.questions.push({
-        text: "",
-        answers: []
-      });
-
-      renderQuestions();
-    });
-
-    // Обработчик отправки формы
+// Обработчик отправки формы
     document.getElementById('test-form').addEventListener('submit', function(e) {
       e.preventDefault();
 
-      // Проверка на пустые вопросы
-      const hasEmptyQuestions = testState.questions.some(q => !q.text.trim());
-      if (hasEmptyQuestions) {
-        alert("Все вопросы должны содержать текст!");
-        return;
-      }
+      // 1. Очищаем предыдущие ошибки
+      clearAllErrors();
 
-      // Проверка на пустые ответы
-      const hasEmptyAnswers = testState.questions.some(q =>
-              q.answers && q.answers.some(a => !a.text.trim())
-      );
-      if (hasEmptyAnswers) {
-        alert("Все ответы должны содержать текст!");
-        return;
-      }
-
-      // Обновляем title и topic
+      // 2. Обновляем данные формы
       testState.title = document.getElementById('test-title').value;
       testState.topic = document.getElementById('test-topic').value;
 
-      // Отправка данных
+      // 3. Клиентская валидация
+      let isValid = true;
+      const errorMessages = [];
+
+      // Проверка названия и темы
+      if (!testState.title.trim()) {
+        markFieldAsInvalid('test-title', 'Введите название теста');
+        isValid = false;
+      }
+
+      if (!testState.topic.trim()) {
+        markFieldAsInvalid('test-topic', 'Введите тему теста');
+        isValid = false;
+      }
+
+      // Проверка вопросов
+      testState.questions.forEach((question, qIndex) => {
+        if (!question.text.trim()) {
+          errorMessages.push(`Вопрос ${qIndex + 1}: текст обязателен`);
+          markQuestionAsInvalid(qIndex, 'Текст вопроса обязателен');
+          isValid = false;
+        }
+
+        // Проверка ответов
+        if (!question.answers || question.answers.length === 0) {
+          errorMessages.push(`Вопрос ${qIndex + 1}: добавьте хотя бы один ответ`);
+          isValid = false;
+        } else {
+          let hasCorrectAnswer = false;
+
+          question.answers.forEach((answer, aIndex) => {
+            if (!answer.text.trim()) {
+              markAnswerAsInvalid(qIndex, aIndex, 'Текст ответа обязателен');
+              isValid = false;
+            }
+
+            if (answer.isCorrect) {
+              hasCorrectAnswer = true;
+            }
+          });
+
+          if (!hasCorrectAnswer) {
+            markQuestionAsInvalid(qIndex, 'Должен быть хотя бы один правильный ответ');
+            isValid = false;
+          }
+        }
+      });
+
+      if (!isValid) {
+        showErrorMessages(errorMessages);
+        return;
+      }
+
+      // 4. Отправка данных
       fetch('/admin/test/edit', {
         method: 'POST',
         headers: {
@@ -331,21 +371,114 @@
         },
         body: JSON.stringify(testState)
       })
-              .then(function(response) {
+              .then(async response => {
                 if (response.ok) {
-                  window.location.href = '/admin/tests';
+                  window.location.href = '/admin/tests?success=true';
                 } else {
-                  return response.text().then(text => { throw new Error(text) });
+                  const data = await response.json();
+                  if (data.errors) {
+                    displayServerErrors(data.errors);
+                  } else {
+                    throw new Error(data.message || 'Ошибка сервера');
+                  }
                 }
               })
-              .catch(function(error) {
+              .catch(error => {
                 console.error('Error:', error);
-                alert('Ошибка при сохранении: ' + error.message);
+                showErrorMessages(['Ошибка при сохранении: ' + error.message]);
               });
     });
-
     // Первоначальный рендеринг
     renderQuestions();
+    // Вспомогательные функции:
+
+    function clearAllErrors() {
+      // Очищаем сообщения
+      document.querySelectorAll('.error-message').forEach(el => el.remove());
+
+      // Убираем подсветку
+      document.querySelectorAll('.is-invalid').forEach(el => {
+        el.classList.remove('is-invalid');
+      });
+
+      // Очищаем глобальные ошибки
+      const globalError = document.getElementById('global-error');
+      if (globalError) globalError.remove();
+    }
+
+    function markFieldAsInvalid(fieldId, message) {
+      const field = document.getElementById(fieldId);
+      if (field) {
+        field.classList.add('is-invalid');
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.textContent = message;
+        field.parentNode.appendChild(errorDiv);
+      }
+    }
+
+    function markQuestionAsInvalid(qIndex, message) {
+      const questionDiv = document.querySelector(`.question-block[data-index="${qIndex}"]`);
+      if (questionDiv) {
+        questionDiv.classList.add('is-invalid');
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.textContent = message;
+        questionDiv.appendChild(errorDiv);
+      }
+    }
+
+    function markAnswerAsInvalid(qIndex, aIndex, message) {
+      const answerInput = document.querySelector(
+              `.question-block[data-index="${qIndex}"] input[name$="[${aIndex}].text"]`
+      );
+      if (answerInput) {
+        answerInput.classList.add('is-invalid');
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.textContent = message;
+        answerInput.parentNode.appendChild(errorDiv);
+      }
+    }
+
+    function showErrorMessages(messages) {
+      if (messages.length === 0) return;
+
+      const errorContainer = document.createElement('div');
+      errorContainer.id = 'global-error';
+      errorContainer.className = 'alert alert-danger';
+
+      messages.forEach(msg => {
+        const p = document.createElement('p');
+        p.textContent = msg;
+        errorContainer.appendChild(p);
+      });
+
+      document.getElementById('test-form').prepend(errorContainer);
+    }
+
+    function displayServerErrors(errors) {
+      Object.entries(errors).forEach(([field, message]) => {
+        // Обработка ошибок сервера по аналогии с клиентскими
+        if (field.startsWith('questions[')) {
+          const match = field.match(/questions\[(\d+)\]/);
+          if (match) {
+            const qIndex = match[1];
+            if (field.includes('.answers[')) {
+              const aMatch = field.match(/answers\[(\d+)\]/);
+              if (aMatch) {
+                markAnswerAsInvalid(qIndex, aMatch[1], message);
+              }
+            } else {
+              markQuestionAsInvalid(qIndex, message);
+            }
+          }
+        } else {
+          markFieldAsInvalid(field, message);
+        }
+      });
+    }
+
   });
 </script>
 
