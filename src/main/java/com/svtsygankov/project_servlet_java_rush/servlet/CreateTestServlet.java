@@ -49,7 +49,7 @@ public class CreateTestServlet extends HttpServlet {
 
         try {
             TestForm form = TestFormParser.parse(req, objectMapper);
-            TestFormValidator.validateForCreate(form, resp);
+            TestFormValidator.validateForCreate(form);
 
             testService.createTest(
                     form.getTitle(),

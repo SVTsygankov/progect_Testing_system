@@ -36,6 +36,11 @@
     .form-group {
       margin-bottom: 15px;
     }
+    .error-message {
+      color: #f44336;
+      font-size: 12px;
+      margin-top: 5px;
+    }
     .question-block {
       border: 1px solid #ddd;
       padding: 15px;

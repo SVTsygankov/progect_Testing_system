@@ -11,7 +11,6 @@ public class TestFormParser {
 
     public static TestForm parse(HttpServletRequest req, ObjectMapper objectMapper) throws IOException {
         // Парсим JSON напрямую в DTO
-        System.out.println("Парсим форму");
         return objectMapper.readValue(req.getReader(), TestForm.class);
     }
 
