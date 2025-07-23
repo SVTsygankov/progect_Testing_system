@@ -16,11 +16,8 @@
   Test test = (Test) request.getAttribute("test");
   ObjectMapper objectMapper = (ObjectMapper) application.getAttribute("objectMapper");
   String testJson = objectMapper.writeValueAsString(test)
-          .replace("\\", "\\\\")
           .replace("'", "\\'")
-          .replace("\"", "\\\"")
-          .replace("\n", "\\n")
-          .replace("\r", "\\r");
+          .replace("\"", "\\\"");
 %>
 
 <!DOCTYPE html>
@@ -28,109 +25,51 @@
 <head>
   <title>Редактировать тест</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      line-height: 1.6;
-    }
-    .form-group {
-      margin-bottom: 15px;
-    }
-    .is-invalid {
-      border-color: #dc3545 !important;
-    }
-
-    .error-message {
-      color: #dc3545;
-      font-size: 0.875em;
-      margin-top: 0.25rem;
-    }
-
-    .alert-danger {
-      color: #721c24;
-      background-color: #f8d7da;
-      border-color: #f5c6cb;
-      padding: 0.75rem 1.25rem;
-      margin-bottom: 1rem;
-      border: 1px solid transparent;
-      border-radius: 0.25rem;
-    }
-    .question-block {
-      border: 1px solid #ddd;
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .question-block { border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; }
+    .answer-item { margin: 10px 0; padding: 10px; background: #f0f0f0; }
+    textarea, input[type="text"] { width: 100%; padding: 8px; margin: 5px 0; }
+    button { padding: 8px 15px; margin-right: 10px; cursor: pointer; }
+    .delete-btn { background: #ff6b6b; color: white; border: none; }
+    #error-container {
+      color: red;
+      margin: 20px 0;
       padding: 15px;
-      margin-bottom: 20px;
-      border-radius: 5px;
-      background: #f9f9f9;
+      border: 1px solid red;
+      border-radius: 4px;
+      display: none;
     }
-    .answer-block {
-      margin-left: 20px;
-      margin-top: 10px;
-    }
-    .answer-item {
-      margin-bottom: 10px;
-      padding: 10px;
-      background: white;
-      border-radius: 3px;
-      border-left: 4px solid #4CAF50;
-    }
-    button {
-      margin-right: 10px;
-      padding: 8px 15px;
-      cursor: pointer;
-      background: #4CAF50;
+    #loading-indicator {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(0,0,0,0.7);
       color: white;
-      border: none;
+      padding: 10px 15px;
       border-radius: 4px;
-      font-size: 14px;
-    }
-    button:hover {
-      opacity: 0.9;
-    }
-    .delete-btn {
-      background: #f44336;
-    }
-    textarea {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-    }
-    input[type="text"] {
-      padding: 8px;
-      width: 70%;
-      margin-left: 5px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-    }
-    label {
-      display: block;
-      margin: 10px 0 5px;
-      font-weight: bold;
-      color: #333;
-    }
-    .question-number {
-      font-weight: bold;
-      color: #2196F3;
-    }
-    .answer-number {
-      font-weight: bold;
-      color: #FF9800;
     }
   </style>
 </head>
 <body>
 <h2>Редактировать тест</h2>
 
+<div id="error-container">
+  <h4>Ошибки валидации:</h4>
+  <ul id="error-list"></ul>
+</div>
+
+<div id="loading-indicator">Сохранение...</div>
+
 <form id="test-form">
   <input type="hidden" id="test-id" value="${test.id}">
 
-  <div class="form-group">
+  <div>
     <label>Название теста:</label>
     <input type="text" id="test-title" value="${fn:escapeXml(test.title)}" required>
   </div>
 
-  <div class="form-group">
+  <div>
     <label>Тема теста:</label>
     <input type="text" id="test-topic" value="${fn:escapeXml(test.topic)}" required>
   </div>
@@ -141,18 +80,37 @@
   </div>
 
   <button type="button" id="add-question-btn">+ Добавить вопрос</button>
-  <button type="submit">Сохранить изменения</button>
+  <button type="submit" id="submit-btn">Сохранить</button>
 </form>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Инициализация данных теста
-    var testState = JSON.parse('<%= testJson %>');
-    console.log("Initial test state:", testState); // Отладочный вывод
+    const testState = JSON.parse('<%= testJson %>');
+    console.log("Initial test state:", testState);
+
+    // Функции для работы с ошибками
+    function showErrors(errors) {
+      const errorContainer = document.getElementById('error-container');
+      const errorList = document.getElementById('error-list');
+
+      errorList.innerHTML = '';
+      errors.forEach(error => {
+        const li = document.createElement('li');
+        li.textContent = error;
+        errorList.appendChild(li);
+      });
+
+      errorContainer.style.display = 'block';
+      window.scrollTo(0, 0); // Прокрутка к ошибкам
+    }
+
+    function hideErrors() {
+      document.getElementById('error-container').style.display = 'none';
+    }
 
     // Функция рендеринга вопросов и ответов
     function renderQuestions() {
-      var container = document.getElementById('questions-container');
+      const container = document.getElementById('questions-container');
       container.innerHTML = '';
 
       if (!testState.questions || testState.questions.length === 0) {
@@ -160,327 +118,161 @@
         return;
       }
 
-      testState.questions.forEach(function(question, qIndex) {
-        var questionNumber = qIndex + 1;
-        var questionDiv = document.createElement('div');
+      testState.questions.forEach((question, qIndex) => {
+        const questionDiv = document.createElement('div');
         questionDiv.className = 'question-block';
-        questionDiv.dataset.questionIndex = qIndex; // Сохраняем индекс вопроса
+        questionDiv.dataset.index = qIndex;
 
-        var questionLabel = document.createElement('label');
-        questionLabel.innerHTML = '<span class="question-number">Вопрос ' + questionNumber + ':</span>';
-
-        var textarea = document.createElement('textarea');
+        // Поле вопроса
+        const textarea = document.createElement('textarea');
         textarea.rows = 3;
         textarea.value = question.text || '';
         textarea.placeholder = "Введите текст вопроса";
-        textarea.dataset.questionId = qIndex; // Связываем с вопросом
+        textarea.required = true;
+        textarea.addEventListener('input', (e) => {
+          question.text = e.target.value;
+        });
 
-        var answerContainer = document.createElement('div');
-        answerContainer.className = 'answer-block';
-
-        var addAnswerBtn = document.createElement('button');
-        addAnswerBtn.type = 'button';
-        addAnswerBtn.className = 'add-answer-btn';
-        addAnswerBtn.textContent = '+ Добавить ответ';
-        addAnswerBtn.dataset.questionId = qIndex;
-
-        var deleteQuestionBtn = document.createElement('button');
-        deleteQuestionBtn.type = 'button';
-        deleteQuestionBtn.className = 'delete-question-btn delete-btn';
+        // Кнопка удаления вопроса
+        const deleteQuestionBtn = document.createElement('button');
+        deleteQuestionBtn.className = 'delete-btn';
         deleteQuestionBtn.textContent = 'Удалить вопрос';
-
-        // Рендеринг ответов
-        if (question.answers && question.answers.length > 0) {
-          question.answers.forEach(function(answer, aIndex) {
-            var answerDiv = document.createElement('div');
-            answerDiv.className = 'answer-item';
-            answerDiv.dataset.answerIndex = aIndex;
-
-            if (answer.isCorrect) {
-              answerDiv.classList.add('correct-answer');
-            }
-
-            var answerLabel = document.createElement('label');
-            answerLabel.innerHTML = '<span class="answer-number">Ответ ' + (aIndex + 1) + ':</span>';
-
-            var answerInput = document.createElement('input');
-            answerInput.type = 'text';
-            answerInput.value = answer.text || '';
-            answerInput.placeholder = "Введите текст ответа";
-            answerInput.required = true;
-            answerInput.dataset.answerIndex = aIndex;
-
-            answerInput.addEventListener('input', function(e) {
-              question.answers[aIndex].text = e.target.value;
-            });
-
-            var checkboxLabel = document.createElement('label');
-            checkboxLabel.style.marginLeft = '10px';
-
-            var checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.checked = answer.isCorrect;
-            checkbox.style.marginRight = '5px';
-            checkbox.dataset.answerIndex = aIndex;
-
-            checkbox.addEventListener('change', function(e) {
-              question.answers[aIndex].isCorrect = e.target.checked;
-              answerDiv.classList.toggle('correct-answer', e.target.checked);
-            });
-
-            checkboxLabel.appendChild(checkbox);
-            checkboxLabel.appendChild(document.createTextNode('Правильный ответ'));
-
-            var deleteBtn = document.createElement('button');
-            deleteBtn.type = 'button';
-            deleteBtn.className = 'delete-btn';
-            deleteBtn.textContent = 'Удалить';
-            deleteBtn.dataset.answerIndex = aIndex;
-
-            deleteBtn.addEventListener('click', function() {
-              if (question.answers.length <= 1) {
-                alert("Должен остаться хотя бы один ответ!");
-                return;
-              }
-
-              if (confirm('Удалить этот ответ?')) {
-                question.answers.splice(aIndex, 1);
-                renderQuestions(); // Полная перерисовка после удаления
-              }
-            });
-
-            answerDiv.appendChild(answerLabel);
-            answerDiv.appendChild(answerInput);
-            answerDiv.appendChild(checkboxLabel);
-            answerDiv.appendChild(deleteBtn);
-
-            answerContainer.appendChild(answerDiv);
-          });
-        }
-
-        // Обработчики для вопросов
-        textarea.addEventListener('input', function(e) {
-          testState.questions[qIndex].text = e.target.value;
-        });
-
-        addAnswerBtn.addEventListener('click', function() {
-          if (!testState.questions[qIndex].answers) {
-            testState.questions[qIndex].answers = [];
-          }
-
-          testState.questions[qIndex].answers.push({
-            id: Date.now(),
-            text: "",
-            isCorrect: false
-          });
-
-          renderQuestions();
-        });
-
-        deleteQuestionBtn.addEventListener('click', function() {
+        deleteQuestionBtn.addEventListener('click', () => {
           if (testState.questions.length <= 1) {
             alert("Тест должен содержать хотя бы один вопрос!");
             return;
           }
-
-          if (confirm('Удалить этот вопрос и все ответы в нём?')) {
-            testState.questions.splice(qIndex, 1);
-            renderQuestions();
-          }
+          testState.questions.splice(qIndex, 1);
+          renderQuestions();
         });
 
-        questionDiv.appendChild(questionLabel);
+        // Контейнер для ответов
+        const answerContainer = document.createElement('div');
+        answerContainer.className = 'answer-block';
+
+        // Кнопка добавления ответа
+        const addAnswerBtn = document.createElement('button');
+        addAnswerBtn.textContent = '+ Добавить ответ';
+        addAnswerBtn.addEventListener('click', () => {
+          if (!question.answers) question.answers = [];
+          question.answers.push({ text: "", isCorrect: false });
+          renderQuestions();
+        });
+
+        // Рендеринг ответов
+        if (question.answers && question.answers.length > 0) {
+          question.answers.forEach((answer, aIndex) => {
+            const answerDiv = document.createElement('div');
+            answerDiv.className = 'answer-item';
+
+            // Поле ответа
+            const answerInput = document.createElement('input');
+            answerInput.type = 'text';
+            answerInput.value = answer.text || '';
+            answerInput.placeholder = "Введите текст ответа";
+            answerInput.required = true;
+            answerInput.addEventListener('input', (e) => {
+              answer.text = e.target.value;
+            });
+
+            // Чекбокс "Правильный ответ"
+            const checkboxLabel = document.createElement('label');
+            checkboxLabel.style.marginLeft = '10px';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = answer.isCorrect || false;
+            checkbox.addEventListener('change', (e) => {
+              answer.isCorrect = e.target.checked;
+            });
+
+            checkboxLabel.appendChild(checkbox);
+            checkboxLabel.appendChild(document.createTextNode(' Правильный ответ'));
+
+            // Кнопка удаления ответа
+            const deleteAnswerBtn = document.createElement('button');
+            deleteAnswerBtn.className = 'delete-btn';
+            deleteAnswerBtn.textContent = 'Удалить';
+            deleteAnswerBtn.addEventListener('click', () => {
+              if (question.answers.length <= 1) {
+                alert("Вопрос должен содержать хотя бы один ответ!");
+                return;
+              }
+              question.answers.splice(aIndex, 1);
+              renderQuestions();
+            });
+
+            answerDiv.appendChild(answerInput);
+            answerDiv.appendChild(checkboxLabel);
+            answerDiv.appendChild(deleteAnswerBtn);
+            answerContainer.appendChild(answerDiv);
+          });
+        }
+
         questionDiv.appendChild(textarea);
         questionDiv.appendChild(answerContainer);
         questionDiv.appendChild(addAnswerBtn);
         questionDiv.appendChild(deleteQuestionBtn);
-
         container.appendChild(questionDiv);
       });
     }
 
-// Обработчик отправки формы
-    document.getElementById('test-form').addEventListener('submit', function(e) {
+    // Обработчик добавления нового вопроса
+    document.getElementById('add-question-btn').addEventListener('click', () => {
+      if (!testState.questions) testState.questions = [];
+      testState.questions.push({ text: "", answers: [] });
+      renderQuestions();
+    });
+
+    // Обработчик отправки формы
+    document.getElementById('test-form').addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      // 1. Очищаем предыдущие ошибки
-      clearAllErrors();
-
-      // 2. Обновляем данные формы
+      // Обновляем данные перед отправкой
       testState.title = document.getElementById('test-title').value;
       testState.topic = document.getElementById('test-topic').value;
 
-      // 3. Клиентская валидация
-      let isValid = true;
-      const errorMessages = [];
+      // Скрываем предыдущие ошибки
+      hideErrors();
 
-      // Проверка названия и темы
-      if (!testState.title.trim()) {
-        markFieldAsInvalid('test-title', 'Введите название теста');
-        isValid = false;
-      }
+      // Показываем индикатор загрузки
+      const loadingIndicator = document.getElementById('loading-indicator');
+      const submitBtn = document.getElementById('submit-btn');
+      loadingIndicator.style.display = 'block';
+      submitBtn.disabled = true;
 
-      if (!testState.topic.trim()) {
-        markFieldAsInvalid('test-topic', 'Введите тему теста');
-        isValid = false;
-      }
+      try {
+        const response = await fetch('/admin/test/edit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(testState)
+        });
 
-      // Проверка вопросов
-      testState.questions.forEach((question, qIndex) => {
-        if (!question.text.trim()) {
-          errorMessages.push(`Вопрос ${qIndex + 1}: текст обязателен`);
-          markQuestionAsInvalid(qIndex, 'Текст вопроса обязателен');
-          isValid = false;
-        }
+        const data = await response.json();
 
-        // Проверка ответов
-        if (!question.answers || question.answers.length === 0) {
-          errorMessages.push(`Вопрос ${qIndex + 1}: добавьте хотя бы один ответ`);
-          isValid = false;
+        if (response.ok) {
+          if (data.success && data.redirectUrl) {
+            window.location.href = data.redirectUrl;
+          }
         } else {
-          let hasCorrectAnswer = false;
-
-          question.answers.forEach((answer, aIndex) => {
-            if (!answer.text.trim()) {
-              markAnswerAsInvalid(qIndex, aIndex, 'Текст ответа обязателен');
-              isValid = false;
-            }
-
-            if (answer.isCorrect) {
-              hasCorrectAnswer = true;
-            }
-          });
-
-          if (!hasCorrectAnswer) {
-            markQuestionAsInvalid(qIndex, 'Должен быть хотя бы один правильный ответ');
-            isValid = false;
+          if (data.errors) {
+            showErrors(data.errors);
+          } else {
+            throw new Error('Неизвестная ошибка сервера');
           }
         }
-      });
-
-      if (!isValid) {
-        showErrorMessages(errorMessages);
-        return;
+      } catch (error) {
+        showErrors([error.message]);
+        console.error('Ошибка:', error);
+      } finally {
+        loadingIndicator.style.display = 'none';
+        submitBtn.disabled = false;
       }
-
-      // 4. Отправка данных
-      fetch('/admin/test/edit', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(testState)
-      })
-              .then(async response => {
-                if (response.ok) {
-                  window.location.href = '/admin/tests?success=true';
-                } else {
-                  const data = await response.json();
-                  if (data.errors) {
-                    displayServerErrors(data.errors);
-                  } else {
-                    throw new Error(data.message || 'Ошибка сервера');
-                  }
-                }
-              })
-              .catch(error => {
-                console.error('Error:', error);
-                showErrorMessages(['Ошибка при сохранении: ' + error.message]);
-              });
     });
+
     // Первоначальный рендеринг
     renderQuestions();
-    // Вспомогательные функции:
-
-    function clearAllErrors() {
-      // Очищаем сообщения
-      document.querySelectorAll('.error-message').forEach(el => el.remove());
-
-      // Убираем подсветку
-      document.querySelectorAll('.is-invalid').forEach(el => {
-        el.classList.remove('is-invalid');
-      });
-
-      // Очищаем глобальные ошибки
-      const globalError = document.getElementById('global-error');
-      if (globalError) globalError.remove();
-    }
-
-    function markFieldAsInvalid(fieldId, message) {
-      const field = document.getElementById(fieldId);
-      if (field) {
-        field.classList.add('is-invalid');
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'error-message';
-        errorDiv.textContent = message;
-        field.parentNode.appendChild(errorDiv);
-      }
-    }
-
-    function markQuestionAsInvalid(qIndex, message) {
-      const questionDiv = document.querySelector(`.question-block[data-index="${qIndex}"]`);
-      if (questionDiv) {
-        questionDiv.classList.add('is-invalid');
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'error-message';
-        errorDiv.textContent = message;
-        questionDiv.appendChild(errorDiv);
-      }
-    }
-
-    function markAnswerAsInvalid(qIndex, aIndex, message) {
-      const answerInput = document.querySelector(
-              `.question-block[data-index="${qIndex}"] input[name$="[${aIndex}].text"]`
-      );
-      if (answerInput) {
-        answerInput.classList.add('is-invalid');
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'error-message';
-        errorDiv.textContent = message;
-        answerInput.parentNode.appendChild(errorDiv);
-      }
-    }
-
-    function showErrorMessages(messages) {
-      if (messages.length === 0) return;
-
-      const errorContainer = document.createElement('div');
-      errorContainer.id = 'global-error';
-      errorContainer.className = 'alert alert-danger';
-
-      messages.forEach(msg => {
-        const p = document.createElement('p');
-        p.textContent = msg;
-        errorContainer.appendChild(p);
-      });
-
-      document.getElementById('test-form').prepend(errorContainer);
-    }
-
-    function displayServerErrors(errors) {
-      Object.entries(errors).forEach(([field, message]) => {
-        // Обработка ошибок сервера по аналогии с клиентскими
-        if (field.startsWith('questions[')) {
-          const match = field.match(/questions\[(\d+)\]/);
-          if (match) {
-            const qIndex = match[1];
-            if (field.includes('.answers[')) {
-              const aMatch = field.match(/answers\[(\d+)\]/);
-              if (aMatch) {
-                markAnswerAsInvalid(qIndex, aMatch[1], message);
-              }
-            } else {
-              markQuestionAsInvalid(qIndex, message);
-            }
-          }
-        } else {
-          markFieldAsInvalid(field, message);
-        }
-      });
-    }
-
   });
 </script>
-
 </body>
 </html>

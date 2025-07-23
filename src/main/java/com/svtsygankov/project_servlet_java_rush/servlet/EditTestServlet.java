@@ -6,7 +6,6 @@ import com.svtsygankov.project_servlet_java_rush.entity.Test;
 import com.svtsygankov.project_servlet_java_rush.service.TestService;
 import com.svtsygankov.project_servlet_java_rush.util.TestFormParser;
 import com.svtsygankov.project_servlet_java_rush.util.TestFormValidator;
-import com.svtsygankov.project_servlet_java_rush.util.ValidationException;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -15,22 +14,24 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.util.Map;
 
 
 import static com.svtsygankov.project_servlet_java_rush.listener.ContextListener.OBJECT_MAPPER;
+import static com.svtsygankov.project_servlet_java_rush.listener.ContextListener.TEST_FORM_VALIDATOR;
 import static com.svtsygankov.project_servlet_java_rush.listener.ContextListener.TEST_SERVICE;
 
 @WebServlet("/admin/test/edit")
 public class EditTestServlet extends HttpServlet {
     private TestService testService;
     private ObjectMapper objectMapper;
+    private TestFormValidator validator;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        testService = (TestService) config.getServletContext().getAttribute(TEST_SERVICE);
-        objectMapper = (ObjectMapper) config.getServletContext().getAttribute(OBJECT_MAPPER);
+        this.testService = (TestService) config.getServletContext().getAttribute(TEST_SERVICE);
+        this.objectMapper = (ObjectMapper) config.getServletContext().getAttribute(OBJECT_MAPPER);
+        this.validator = (TestFormValidator) config.getServletContext().getAttribute(TEST_FORM_VALIDATOR);
     }
 
     @Override
@@ -57,8 +58,17 @@ public class EditTestServlet extends HttpServlet {
         try {
             // Парсинг данных формы
             TestForm form = TestFormParser.parse(req, objectMapper);
+
             // Валидация
-            TestFormValidator.validateForUpdate(form);
+            if (!validator.validateForUpdate(form)) {
+                resp.setContentType("application/json");
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400 статус
+                resp.getWriter().write(
+                        "{\"errors\": " + objectMapper.writeValueAsString(validator.getErrors()) + "}"
+                );
+                return;
+            }
+
             // Получаем текущий тест для сохранения created_by
             Test existingTest = testService.findById(form.getId());
             // Обновление теста
@@ -71,30 +81,15 @@ public class EditTestServlet extends HttpServlet {
                     .build();
 
             testService.updateTest(updatedTest);
-            sendSuccessResponse(resp, "Тест успешно обновлен");
-            // Редирект после успешного сохранения
-            resp.sendRedirect(req.getContextPath() + "/admin/tests");
 
-        } catch (ValidationException e) {
-            sendErrorResponse(resp, HttpServletResponse.SC_BAD_REQUEST, e.getErrors());
+            // Успешный ответ для AJAX
+            resp.setContentType("application/json");
+            resp.getWriter().write("{\"success\": true, \"redirectUrl\": \"/admin/tests\"}");
+
         } catch (Exception e) {
-            sendErrorResponse(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    Map.of("error", "Внутренняя ошибка сервера"));
+            resp.setContentType("application/json");
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.getWriter().write("{\"errors\": [\"" + e.getMessage() + "\"]}");
         }
-    }
-
-    private void sendSuccessResponse(HttpServletResponse resp, String message) throws IOException {
-        resp.setStatus(HttpServletResponse.SC_OK);
-        resp.setContentType("application/json");
-        objectMapper.writeValue(resp.getWriter(),
-                Map.of("success", true, "message", message));
-    }
-
-    private void sendErrorResponse(HttpServletResponse resp, int status,
-                                   Map<String, String> errors) throws IOException {
-        resp.setStatus(status);
-        resp.setContentType("application/json");
-        objectMapper.writeValue(resp.getWriter(),
-                Map.of("success", false, "errors", errors));
     }
 }

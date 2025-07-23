@@ -11,6 +11,7 @@ import com.svtsygankov.project_servlet_java_rush.service.LoginAttemptServiceImpl
 import com.svtsygankov.project_servlet_java_rush.service.ResultsService;
 import com.svtsygankov.project_servlet_java_rush.service.TestService;
 import com.svtsygankov.project_servlet_java_rush.service.UserService;
+import com.svtsygankov.project_servlet_java_rush.util.TestFormValidator;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
@@ -24,7 +25,8 @@ public class ContextListener implements ServletContextListener {
     public static final String AUTHENTICATION_SERVICE = "authenticationService";
     public static final String TEST_SERVICE = "testService";
     public static final String RESULTS_SERVICE = "resultsService";
-    public static final String OBJECT_MAPPER ="objectMapper";
+    public static final String OBJECT_MAPPER = "objectMapper";
+    public static final String TEST_FORM_VALIDATOR = "testFormValidator";
     public static final String TESTS_PATH =        "E:\\JavaRush\\Project_servlet_Java_Rush\\src\\main\\resources\\data\\tests";
     public static final String USER_FILE_PATH =    "E:\\JavaRush\\Project_servlet_Java_Rush\\src\\main\\resources\\data\\users\\users.json";
     public static final String RESULTS_FILE_PATH = "E:\\JavaRush\\Project_servlet_Java_Rush\\src\\main\\resources\\data\\results\\results.json";
@@ -50,6 +52,7 @@ public class ContextListener implements ServletContextListener {
         var testService = new TestService(testDao);
         var resultsDao = new ResultsDao(objectMapper, resultsFile);
         var resultsService = new ResultsService(resultsDao);
+        var validator = new TestFormValidator();
 
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
@@ -57,6 +60,7 @@ public class ContextListener implements ServletContextListener {
         servletContext.setAttribute(TEST_SERVICE, testService);
         servletContext.setAttribute(RESULTS_SERVICE, resultsService);
         servletContext.setAttribute(OBJECT_MAPPER, objectMapper);
+        servletContext.setAttribute(TEST_FORM_VALIDATOR, validator);
 
     }
 }
