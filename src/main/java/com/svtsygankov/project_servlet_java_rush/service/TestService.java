@@ -41,4 +41,7 @@ public class TestService {
     public Test findById(int id) throws IOException {
         return testDao.findById(id);
     }
+    public boolean deleteById(int id) throws IOException {
+        return testDao.deleteById(id);
+    }
 }
