@@ -11,6 +11,6 @@ public class Result {
     private Long user_id;
     private Integer test_id;
     private Instant date;
-    private List<GivenAnswer>  answers;
+    private List<Answers>  answers;
 
 }
