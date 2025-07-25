@@ -61,7 +61,7 @@
       <tr>
         <td>${test.title}</td>
         <td>
-          <a href="pass-test?id=${test.id}">Пройти тест</a>
+          <a href="start-test?id=${test.id}">Пройти тест</a>
         </td>
       </tr>
     </c:forEach>
