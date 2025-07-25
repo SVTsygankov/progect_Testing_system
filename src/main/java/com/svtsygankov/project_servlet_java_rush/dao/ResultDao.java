@@ -9,11 +9,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class ResultsDao extends BaseDao<Result> {
+public class ResultDao extends BaseDao<Result> {
 
     private final AtomicLong currentId = new AtomicLong(0L);
 
-    public ResultsDao(ObjectMapper mapper, File file) throws IOException {
+    public ResultDao(ObjectMapper mapper, File file) throws IOException {
         super(mapper, file, new TypeReference<List<Result>>() {
         });
         initCurrentId();
@@ -25,9 +25,24 @@ public class ResultsDao extends BaseDao<Result> {
             long maxId = results.stream()
                     .mapToLong(Result::getId)
                     .max()
-                    .getAsLong();
+                    .orElse(0L);
 
             currentId.set(maxId);
         }
+    }
+
+    public long getNextId() {
+        return currentId.incrementAndGet();
+    }
+
+    @Override
+    public void save(Result result) throws IOException {
+        super.save(result);
+    }
+
+    public List<Result> findAllByUserId(long userId) throws IOException {
+        return findAll().stream()
+                .filter(r -> r.getUserId() == userId)
+                .toList();
     }
 }

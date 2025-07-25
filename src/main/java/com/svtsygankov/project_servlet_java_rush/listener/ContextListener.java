@@ -3,12 +3,12 @@ package com.svtsygankov.project_servlet_java_rush.listener;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.svtsygankov.project_servlet_java_rush.dao.ResultsDao;
+import com.svtsygankov.project_servlet_java_rush.dao.ResultDao;
 import com.svtsygankov.project_servlet_java_rush.dao.TestDao;
 import com.svtsygankov.project_servlet_java_rush.dao.UserDao;
 import com.svtsygankov.project_servlet_java_rush.service.AuthenticationService;
 import com.svtsygankov.project_servlet_java_rush.service.LoginAttemptServiceImpl;
-import com.svtsygankov.project_servlet_java_rush.service.ResultsService;
+import com.svtsygankov.project_servlet_java_rush.service.ResultService;
 import com.svtsygankov.project_servlet_java_rush.service.TestService;
 import com.svtsygankov.project_servlet_java_rush.service.UserService;
 import com.svtsygankov.project_servlet_java_rush.util.TestFormValidator;
@@ -50,8 +50,8 @@ public class ContextListener implements ServletContextListener {
         var authenticationService = new AuthenticationService(loginAttemptService, userService);
         var testDao = new TestDao(objectMapper, testsDirectory);
         var testService = new TestService(testDao);
-        var resultsDao = new ResultsDao(objectMapper, resultsFile);
-        var resultsService = new ResultsService(resultsDao);
+        var resultsDao = new ResultDao(objectMapper, resultsFile);
+        var resultsService = new ResultService(resultsDao, testService, userService);
         var validator = new TestFormValidator();
 
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

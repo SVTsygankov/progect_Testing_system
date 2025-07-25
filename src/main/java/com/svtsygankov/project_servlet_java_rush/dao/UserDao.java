@@ -24,7 +24,7 @@ public class UserDao extends BaseDao<User>{
             long maxId = users.stream()
                     .mapToLong(User::getId)
                     .max()
-                    .getAsLong();
+                    .orElse(0L);
 
             currentId.set(maxId);
         }
