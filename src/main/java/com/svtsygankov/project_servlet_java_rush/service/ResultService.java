@@ -5,7 +5,6 @@ import com.svtsygankov.project_servlet_java_rush.entity.Answer;
 import com.svtsygankov.project_servlet_java_rush.entity.Question;
 import com.svtsygankov.project_servlet_java_rush.entity.Result;
 import com.svtsygankov.project_servlet_java_rush.entity.Test;
-import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -25,15 +24,7 @@ public class ResultService {
         this.userService = userService;
     }
 
-    public Result createTestResult(HttpServletRequest request,
-                                   Map<Integer, Integer> questionToAnswerIndex) throws IOException {
-        // 1. Получаем userId и testId из сессии
-        Long userId = (Long) request.getSession().getAttribute("userId");
-        Integer testId = (Integer) request.getSession().getAttribute("currentTestId");
-
-        if (userId == null || testId == null) {
-            throw new IllegalStateException("Сессия не содержит необходимых данных");
-        }
+    public Result createTestResult(Long userId, Integer testId,  Map<Integer, Integer> questionToAnswerIndex) throws IOException {
 
         // 2. Получаем тест из базы
         Test test = testService.findById(testId);

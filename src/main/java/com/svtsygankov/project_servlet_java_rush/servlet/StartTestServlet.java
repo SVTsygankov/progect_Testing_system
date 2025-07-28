@@ -10,11 +10,11 @@ import java.io.IOException;
 
 @WebServlet("/start-test")
 public class StartTestServlet extends HttpServlet {
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        int testId = Integer.parseInt(request.getParameter("id"));
-        request.getSession().setAttribute("currentTestId", testId);
-        response.sendRedirect("/test-passing");
+        int id = Integer.parseInt(req.getParameter("id"));
+        req.getSession().setAttribute("currentTestId", id);
+        resp.sendRedirect(req.getContextPath() + "/passing-test");
     }
 }

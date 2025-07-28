@@ -1,11 +1,18 @@
 package com.svtsygankov.project_servlet_java_rush.listener;
 
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.svtsygankov.project_servlet_java_rush.dao.ResultDao;
 import com.svtsygankov.project_servlet_java_rush.dao.TestDao;
 import com.svtsygankov.project_servlet_java_rush.dao.UserDao;
+import com.svtsygankov.project_servlet_java_rush.entity.Result;
 import com.svtsygankov.project_servlet_java_rush.service.AuthenticationService;
 import com.svtsygankov.project_servlet_java_rush.service.LoginAttemptServiceImpl;
 import com.svtsygankov.project_servlet_java_rush.service.ResultService;
@@ -18,6 +25,7 @@ import jakarta.servlet.annotation.WebListener;
 import lombok.SneakyThrows;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.io.File;
+import java.time.Instant;
 
 @WebListener
 public class ContextListener implements ServletContextListener {
@@ -39,6 +47,16 @@ public class ContextListener implements ServletContextListener {
         var servletContext = sce.getServletContext();
 
         var objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        objectMapper.configure(JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
+        objectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+        objectMapper.addMixIn(Result.UserAnswer.class, UserAnswerMixin.class);
+        objectMapper.addMixIn(Instant.class, InstantMixin.class);
+
         var usersFile = new File(USER_FILE_PATH);
         var resultsFile = new File(RESULTS_FILE_PATH);
         var testsDirectory = new File(TESTS_PATH);
@@ -53,8 +71,6 @@ public class ContextListener implements ServletContextListener {
         var resultsDao = new ResultDao(objectMapper, resultsFile);
         var resultsService = new ResultService(resultsDao, testService, userService);
         var validator = new TestFormValidator();
-
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         servletContext.setAttribute(AUTHENTICATION_SERVICE, authenticationService);
         servletContext.setAttribute(TEST_SERVICE, testService);

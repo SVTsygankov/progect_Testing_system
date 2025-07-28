@@ -1,5 +1,8 @@
 package com.svtsygankov.project_servlet_java_rush.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,20 +15,25 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Result {
     private Long id;
     private Long userId;
     private Integer testId;
     private Instant date;
-    private List<UserAnswer>  answers;
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private List<UserAnswer> answers;
 
     @Data
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
+    @JsonSerialize(as = UserAnswer.class)
     public static class UserAnswer {
-        private String askedQuestion;  // Текст вопроса на момент прохождения
-        private String selectedAnswer; // Текст выбранного ответа
-        private boolean isCorrect; // Правильность ответа
+        private String askedQuestion;
+        private String selectedAnswer;
+        @JsonProperty("isCorrect")
+        private boolean isCorrect;
     }
 }

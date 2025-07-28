@@ -1,1 +1,63 @@
-[]
+[ {
+  "id" : 1,
+  "userId" : 2,
+  "testId" : 7,
+  "date" : "2025-07-28T06:05:16.915814100Z",
+  "answers" : [ {
+    "askedQuestion" : "Насекомые это звери",
+    "selectedAnswer" : "А фиг его знает",
+    "isCorrect" : false
+  }, {
+    "askedQuestion" : "Крокодил это насекомое",
+    "selectedAnswer" : "Да",
+    "isCorrect" : false
+  }, {
+    "askedQuestion" : "Таракан это насекомое?",
+    "selectedAnswer" : "Нет",
+    "isCorrect" : false
+  }, {
+    "askedQuestion" : "Членистоногие это насекомые?",
+    "selectedAnswer" : "да",
+    "isCorrect" : false
+  }, {
+    "askedQuestion" : "Насекомые это членистоногие?",
+    "selectedAnswer" : "Нет",
+    "isCorrect" : true
+  } ]
+}, {
+  "id" : 2,
+  "userId" : 2,
+  "testId" : 4,
+  "date" : "2025-07-28T06:06:28.180673100Z",
+  "answers" : [ {
+    "askedQuestion" : "Сколько ног у насекомых",
+    "selectedAnswer" : "Четыре",
+    "isCorrect" : false
+  }, {
+    "askedQuestion" : "У насекомых ест хвост?",
+    "selectedAnswer" : "Да",
+    "isCorrect" : false
+  }, {
+    "askedQuestion" : "Паук это насекомое",
+    "selectedAnswer" : "да",
+    "isCorrect" : false
+  }, {
+    "askedQuestion" : "новый вопрос",
+    "selectedAnswer" : "Это новый вопрос?",
+    "isCorrect" : true
+  } ]
+}, {
+  "id" : 3,
+  "userId" : 5,
+  "testId" : 3,
+  "date" : "2025-07-28T06:34:06.720280100Z",
+  "answers" : [ {
+    "askedQuestion" : "Какого цвета Тьма?",
+    "selectedAnswer" : "Черного",
+    "isCorrect" : false
+  }, {
+    "askedQuestion" : "Какого цвета Свет",
+    "selectedAnswer" : "Белого",
+    "isCorrect" : false
+  } ]
+} ]

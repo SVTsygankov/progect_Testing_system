@@ -61,7 +61,7 @@
       <tr>
         <td>${test.title}</td>
         <td>
-          <a href="start-test?id=${test.id}">Пройти тест</a>
+          <a href="${pageContext.request.contextPath}/start-test?id=${test.id}">Пройти тест</a>
         </td>
       </tr>
     </c:forEach>
