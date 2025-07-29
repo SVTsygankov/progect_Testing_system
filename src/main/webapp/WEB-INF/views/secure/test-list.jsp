@@ -69,7 +69,7 @@
 </c:forEach>
 
 <div style="margin-top: 20px;">
-  <a href="test-history" style="padding: 5px 10px; background: #f2f2f2; border: 1px solid #ddd;">
+  <a href="${pageContext.request.contextPath}/secure/history" style="padding: 5px 10px; background: #f2f2f2; border: 1px solid #ddd;">
     Просмотр истории тестирований
   </a>
 </div>

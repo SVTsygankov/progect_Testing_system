@@ -44,6 +44,13 @@ public class SecurityFilter implements Filter {
         }
 
         if (path.startsWith("/secure/")) {
+            // Разрешаем logout и switch-URL без проверки роли
+            if (path.equals("/secure/logout") ||
+                    path.equals("/secure/switch-to-admin") ||
+                    path.equals("/secure/switch-to-user")) {
+                chain.doFilter(request, response);
+                return;
+            }
             if (user.getRole() == Role.USER || user.getRole() == Role.ADMIN) {
                 chain.doFilter(request, response);
                 return;
@@ -68,9 +75,13 @@ public class SecurityFilter implements Filter {
 
     private boolean isPublicPath(String path) {
         return path.equals("/") ||
-                path.equals("/login") ||
-                path.equals("/registration") ||
-                path.startsWith("/WEB-INF");
+               path.equals("/login") ||
+               path.equals("/registration") ||
+               path.startsWith("/WEB-INF") ||
+               path.startsWith("/css/") ||
+               path.startsWith("/js/") ||
+               path.startsWith("/images/") ||
+               path.equals("/favicon.ico");
     }
 
     private boolean isAjaxRequest(HttpServletRequest request) {

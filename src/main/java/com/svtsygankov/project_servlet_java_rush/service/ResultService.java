@@ -9,8 +9,10 @@ import com.svtsygankov.project_servlet_java_rush.entity.Test;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ResultService {
 
@@ -62,5 +64,12 @@ public class ResultService {
 
         resultDao.save(result);
         return result;
+    }
+
+    public List<Result> getUserResults(Long userId) throws IOException {
+        return resultDao.findAll().stream()
+                .filter(r -> r.getUserId().equals(userId))
+                .sorted(Comparator.comparing(Result::getDate).reversed())
+                .collect(Collectors.toList());
     }
 }

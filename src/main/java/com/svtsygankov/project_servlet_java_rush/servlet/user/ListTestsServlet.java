@@ -1,5 +1,6 @@
-package com.svtsygankov.project_servlet_java_rush.servlet;
+package com.svtsygankov.project_servlet_java_rush.servlet.user;
 
+import com.svtsygankov.project_servlet_java_rush.servlet.BaseListTestsServlet;
 import jakarta.servlet.annotation.WebServlet;
 
 @WebServlet("/secure/tests")

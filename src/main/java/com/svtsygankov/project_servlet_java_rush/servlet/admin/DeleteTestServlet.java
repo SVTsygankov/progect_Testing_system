@@ -1,4 +1,4 @@
-package com.svtsygankov.project_servlet_java_rush.servlet;
+package com.svtsygankov.project_servlet_java_rush.servlet.admin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.svtsygankov.project_servlet_java_rush.service.TestService;

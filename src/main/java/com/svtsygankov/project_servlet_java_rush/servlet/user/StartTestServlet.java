@@ -1,4 +1,4 @@
-package com.svtsygankov.project_servlet_java_rush.servlet;
+package com.svtsygankov.project_servlet_java_rush.servlet.user;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

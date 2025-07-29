@@ -60,4 +60,30 @@
     "selectedAnswer" : "Белого",
     "isCorrect" : false
   } ]
+}, {
+  "id" : 4,
+  "userId" : 1,
+  "testId" : 7,
+  "date" : "2025-07-28T09:21:20.962576Z",
+  "answers" : [ {
+    "askedQuestion" : "Насекомые это звери",
+    "selectedAnswer" : "Нет",
+    "isCorrect" : true
+  }, {
+    "askedQuestion" : "Крокодил это насекомое",
+    "selectedAnswer" : "Нет",
+    "isCorrect" : true
+  }, {
+    "askedQuestion" : "Таракан это насекомое?",
+    "selectedAnswer" : "Да",
+    "isCorrect" : true
+  }, {
+    "askedQuestion" : "Членистоногие это насекомые?",
+    "selectedAnswer" : "Нет",
+    "isCorrect" : true
+  }, {
+    "askedQuestion" : "Насекомые это членистоногие?",
+    "selectedAnswer" : "Да",
+    "isCorrect" : true
+  } ]
 } ]

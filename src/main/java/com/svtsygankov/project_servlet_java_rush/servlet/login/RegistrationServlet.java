@@ -1,5 +1,6 @@
-package com.svtsygankov.project_servlet_java_rush.servlet;
+package com.svtsygankov.project_servlet_java_rush.servlet.login;
 
+import com.svtsygankov.project_servlet_java_rush.servlet.login.BaseAuthenticationServlet;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebInitParam;
 import jakarta.servlet.annotation.WebServlet;
@@ -12,7 +13,7 @@ import java.io.IOException;
         initParams = {@WebInitParam(name = "resourceName", value = "/WEB-INF/views/registration.jsp"),
                       @WebInitParam(name = "contentPage", value = "registration-form")
         })
-public class RegistrationServlet extends BaseAuthenticationServlet{
+public class RegistrationServlet extends BaseAuthenticationServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

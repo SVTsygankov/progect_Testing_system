@@ -1,4 +1,4 @@
-package com.svtsygankov.project_servlet_java_rush.servlet;
+package com.svtsygankov.project_servlet_java_rush.servlet.login;
 
 import com.svtsygankov.project_servlet_java_rush.entity.Role;
 import com.svtsygankov.project_servlet_java_rush.entity.User;
