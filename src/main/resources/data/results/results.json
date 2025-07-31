@@ -86,4 +86,26 @@
     "selectedAnswer" : "Да",
     "isCorrect" : true
   } ]
+}, {
+  "id" : 5,
+  "userId" : 1,
+  "testId" : 4,
+  "date" : "2025-07-30T12:19:43.999317700Z",
+  "answers" : [ {
+    "askedQuestion" : "Сколько ног у насекомых",
+    "selectedAnswer" : "Шесть",
+    "isCorrect" : true
+  }, {
+    "askedQuestion" : "У насекомых ест хвост?",
+    "selectedAnswer" : "Нет",
+    "isCorrect" : true
+  }, {
+    "askedQuestion" : "Паук это насекомое",
+    "selectedAnswer" : "нет",
+    "isCorrect" : true
+  }, {
+    "askedQuestion" : "новый вопрос",
+    "selectedAnswer" : "Это новый вопрос?",
+    "isCorrect" : true
+  } ]
 } ]

@@ -7,6 +7,7 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,9 +30,13 @@
 
             <div class="result-details">
                 <p>Correct answers:
-                    <c:out value="${result.answers.stream()
-                           .filter(a -> a.isCorrect).count()}"/> /
-                    <c:out value="${result.answers.size()}"/>
+                    <c:set var="correctCount" value="0"/>
+                    <c:forEach items="${result.answers}" var="answer">
+                        <c:if test="${answer.correct}">
+                            <c:set var="correctCount" value="${correctCount + 1}"/>
+                        </c:if>
+                    </c:forEach>
+                        ${correctCount} / ${fn:length(result.answers)}
                 </p>
                 <a href="${pageContext.request.contextPath}/secure/result-details?id=${result.id}"
                    class="btn btn-details">
