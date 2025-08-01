@@ -8,6 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,27 +19,21 @@
 <div class="container">
     <h1>Your Test History</h1>
 
-    <c:if test="${empty results}">
+    <c:if test="${empty resultsWithCounts}">
         <p>No test results found.</p>
     </c:if>
 
-    <c:forEach items="${results}" var="result">
+    <c:forEach items="${resultsWithCounts}" var="resultData">
         <div class="test-result">
-            <h3>Test #${result.testId} -
-                <fmt:formatDate value="${result.date}" pattern="dd.MM.yyyy HH:mm"/>
+            <h3>Test #${resultData.result.testId} -
+                <fmt:formatDate value="${resultData.dateAsDate}" pattern="dd.MM.yyyy HH:mm"/>
             </h3>
 
             <div class="result-details">
                 <p>Correct answers:
-                    <c:set var="correctCount" value="0"/>
-                    <c:forEach items="${result.answers}" var="answer">
-                        <c:if test="${answer.correct}">
-                            <c:set var="correctCount" value="${correctCount + 1}"/>
-                        </c:if>
-                    </c:forEach>
-                        ${correctCount} / ${fn:length(result.answers)}
+                        ${resultData.correctAnswersCount} / ${fn:length(resultData.result.answers)}
                 </p>
-                <a href="${pageContext.request.contextPath}/secure/result-details?id=${result.id}"
+                <a href="${pageContext.request.contextPath}/secure/result-details?id=${resultData.result.id}"
                    class="btn btn-details">
                     View Details
                 </a>

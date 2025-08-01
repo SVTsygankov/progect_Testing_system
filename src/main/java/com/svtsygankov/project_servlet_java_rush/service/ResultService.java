@@ -7,7 +7,7 @@ import com.svtsygankov.project_servlet_java_rush.entity.Result;
 import com.svtsygankov.project_servlet_java_rush.entity.Test;
 
 import java.io.IOException;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -58,7 +58,7 @@ public class ResultService {
                 .id(resultDao.getNextId())
                 .userId(userId)
                 .testId(testId)
-                .date(Instant.now())
+                .date(LocalDateTime.now())
                 .answers(userAnswers)
                 .build();
 

@@ -11,7 +11,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/secure/history")
 public class UserHistoryServlet extends HttpServlet {
@@ -29,12 +33,34 @@ public class UserHistoryServlet extends HttpServlet {
         var userId = user.getId();
         try {
             List<Result> results = resultService.getUserResults(userId);
-            req.setAttribute("results", results);
+
+            // Создаем список DTO или Map с дополнительным полем correctAnswersCount
+            List<Map<String, Object>> resultsWithCounts = new ArrayList<>();
+
+            for (Result result : results) {
+                Map<String, Object> resultData = new HashMap<>();
+                resultData.put("result", result);
+
+                // Конвертируем LocalDateTime в Date для JSTL
+                resultData.put(
+                        "dateAsDate",
+                        java.util.Date.from(result.getDate().atZone(ZoneId.systemDefault()).toInstant())
+                );
+
+                long correctCount = result.getAnswers().stream()
+                        .filter(Result.UserAnswer::isCorrect)
+                        .count();
+                resultData.put("correctAnswersCount", correctCount);
+                resultsWithCounts.add(resultData);
+            }
+
+            req.setAttribute("resultsWithCounts", resultsWithCounts);
             req.getRequestDispatcher("/WEB-INF/views/secure/history.jsp")
                     .forward(req, resp);
-        } catch (IOException e) {
+        } catch (Exception e) {
+            System.out.println("Исключение: " + e);
             req.setAttribute("error", "Error loading history");
-            req.getRequestDispatcher("/WEB-INF/views/error.jsp")
+            req.getRequestDispatcher("/WEB-INF/views/alerts.jsp")
                     .forward(req, resp);
         }
     }

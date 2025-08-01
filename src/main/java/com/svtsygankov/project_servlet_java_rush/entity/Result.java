@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -20,7 +21,7 @@ public class Result {
     private Long id;
     private Long userId;
     private Integer testId;
-    private Instant date;
+    private LocalDateTime date;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<UserAnswer> answers;
