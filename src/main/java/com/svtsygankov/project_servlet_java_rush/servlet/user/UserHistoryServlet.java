@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,8 +56,18 @@ public class UserHistoryServlet extends HttpServlet {
             }
 
             req.setAttribute("resultsWithCounts", resultsWithCounts);
-            req.getRequestDispatcher("/WEB-INF/views/secure/history.jsp")
-                    .forward(req, resp);
+            req.setAttribute("contentPage", "/WEB-INF/views/secure/history-content.jsp"); // Для лейаута
+
+            // Для отладки: проверка загрузки ресурса
+            InputStream is = getClass().getClassLoader().getResourceAsStream("messages.properties");
+            if (is == null) {
+                System.err.println("Файл messages.properties не найден в classpath!");
+            } else {
+                System.out.println("Файл messages.properties успешно загружен");
+                is.close();
+            }
+            req.getRequestDispatcher("/WEB-INF/views/secure/history-layout.jsp").forward(req, resp);
+
         } catch (Exception e) {
             System.out.println("Исключение: " + e);
             req.setAttribute("error", "Error loading history");
