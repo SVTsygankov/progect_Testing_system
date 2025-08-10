@@ -4,12 +4,61 @@ body {
     margin: 0;
     padding: 0;
 }
+
 header {
     background-color: #343a40;
     color: white;
-    text-align: center;
     padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
+
+header h1 {
+    margin: 0;
+    font-size: 1.5em;
+}
+
+.mode-switcher {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-admin, .btn-user-mode {
+    background-color: #17a2b8;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: background-color 0.3s;
+}
+
+.btn-admin:hover, .btn-user-mode:hover {
+    background-color: #138496;
+}
+
+.btn-logout {
+    background-color: #dc3545;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: background-color 0.3s;
+}
+
+.btn-logout:hover {
+    background-color: #c82333;
+}
+/* Иконки (если ещё нет) */
+.fas {
+    margin-right: 5px;
+}
+
 .container {
     display: flex;
     justify-content: center;
@@ -71,10 +120,6 @@ input[type="submit"]:hover {
     color: white;
 }
 
-/* Иконки (если ещё нет) */
-.fas {
-    margin-right: 5px;
-}
 footer {
     background-color: #343a40;
     color: white;

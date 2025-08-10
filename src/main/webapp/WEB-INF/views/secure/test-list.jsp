@@ -12,36 +12,36 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>Доступные тесты</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-bottom: 20px;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: left;
-    }
-    th {
-      background-color: #f2f2f2;
-    }
-    a {
-      text-decoration: none;
-      color: #0066cc;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    .topic-header {
-      margin-top: 20px;
-      font-weight: bold;
-    }
-  </style>
+<%--  <style>--%>
+<%--    body {--%>
+<%--      font-family: Arial, sans-serif;--%>
+<%--      margin: 20px;--%>
+<%--    }--%>
+<%--    table {--%>
+<%--      border-collapse: collapse;--%>
+<%--      width: 100%;--%>
+<%--      margin-bottom: 20px;--%>
+<%--    }--%>
+<%--    th, td {--%>
+<%--      border: 1px solid #ddd;--%>
+<%--      padding: 8px;--%>
+<%--      text-align: left;--%>
+<%--    }--%>
+<%--    th {--%>
+<%--      background-color: #f2f2f2;--%>
+<%--    }--%>
+<%--    a {--%>
+<%--      text-decoration: none;--%>
+<%--      color: #0066cc;--%>
+<%--    }--%>
+<%--    a:hover {--%>
+<%--      text-decoration: underline;--%>
+<%--    }--%>
+<%--    .topic-header {--%>
+<%--      margin-top: 20px;--%>
+<%--      font-weight: bold;--%>
+<%--    }--%>
+<%--  </style>--%>
 </head>
 <body>
 <h1>Доступные тесты</h1>

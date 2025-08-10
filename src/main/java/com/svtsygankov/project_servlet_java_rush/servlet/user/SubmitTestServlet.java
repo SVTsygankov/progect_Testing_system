@@ -56,7 +56,7 @@ public class SubmitTestServlet extends HttpServlet {
 
         } catch (Exception e) {
             req.setAttribute("error", "Ошибка сохранения результатов: " + e.getMessage());
-            req.getRequestDispatcher("/WEB-INF/views/error.jsp").forward(req, resp);
+            req.getRequestDispatcher("/WEB-INF/views/alerts.jsp").forward(req, resp);
         }
     }
 
