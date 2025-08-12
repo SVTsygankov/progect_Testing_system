@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Answer {
     private String text;
-    @JsonProperty("isCorrect")
-    private boolean isCorrect;
+//    @JsonProperty("isCorrect")
+    private boolean correct;
 }

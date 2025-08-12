@@ -8,27 +8,27 @@
       {
         "askedQuestion": "Насекомые это звери",
         "selectedAnswer": "А фиг его знает",
-        "isCorrect": false
+        "correct": false
       },
       {
         "askedQuestion": "Крокодил это насекомое",
         "selectedAnswer": "Да",
-        "isCorrect": false
+        "correct": false
       },
       {
         "askedQuestion": "Таракан это насекомое?",
         "selectedAnswer": "Нет",
-        "isCorrect": false
+        "correct": false
       },
       {
         "askedQuestion": "Членистоногие это насекомые?",
         "selectedAnswer": "да",
-        "isCorrect": false
+        "correct": false
       },
       {
         "askedQuestion": "Насекомые это членистоногие?",
         "selectedAnswer": "Нет",
-        "isCorrect": true
+        "correct": true
       }
     ]
   },
@@ -41,22 +41,22 @@
       {
         "askedQuestion": "Сколько ног у насекомых",
         "selectedAnswer": "Четыре",
-        "isCorrect": false
+        "correct": false
       },
       {
         "askedQuestion": "У насекомых ест хвост?",
         "selectedAnswer": "Да",
-        "isCorrect": false
+        "correct": false
       },
       {
         "askedQuestion": "Паук это насекомое",
         "selectedAnswer": "да",
-        "isCorrect": false
+        "correct": false
       },
       {
         "askedQuestion": "новый вопрос",
         "selectedAnswer": "Это новый вопрос?",
-        "isCorrect": true
+        "correct": true
       }
     ]
   },
@@ -69,12 +69,12 @@
       {
         "askedQuestion": "Какого цвета Тьма?",
         "selectedAnswer": "Черного",
-        "isCorrect": false
+        "correct": false
       },
       {
         "askedQuestion": "Какого цвета Свет",
         "selectedAnswer": "Белого",
-        "isCorrect": false
+        "correct": false
       }
     ]
   },
@@ -87,27 +87,27 @@
       {
         "askedQuestion": "Насекомые это звери",
         "selectedAnswer": "Нет",
-        "isCorrect": true
+        "correct": true
       },
       {
         "askedQuestion": "Крокодил это насекомое",
         "selectedAnswer": "Нет",
-        "isCorrect": true
+        "correct": true
       },
       {
         "askedQuestion": "Таракан это насекомое?",
         "selectedAnswer": "Да",
-        "isCorrect": true
+        "correct": true
       },
       {
         "askedQuestion": "Членистоногие это насекомые?",
         "selectedAnswer": "Нет",
-        "isCorrect": true
+        "correct": true
       },
       {
         "askedQuestion": "Насекомые это членистоногие?",
         "selectedAnswer": "Да",
-        "isCorrect": true
+        "correct": true
       }
     ]
   },
@@ -120,22 +120,22 @@
       {
         "askedQuestion": "Сколько ног у насекомых",
         "selectedAnswer": "Шесть",
-        "isCorrect": true
+        "correct": true
       },
       {
         "askedQuestion": "У насекомых ест хвост?",
         "selectedAnswer": "Нет",
-        "isCorrect": true
+        "correct": true
       },
       {
         "askedQuestion": "Паук это насекомое",
         "selectedAnswer": "нет",
-        "isCorrect": true
+        "correct": true
       },
       {
         "askedQuestion": "новый вопрос",
         "selectedAnswer": "Это новый вопрос?",
-        "isCorrect": true
+        "correct": true
       }
     ]
   },
@@ -148,12 +148,12 @@
       {
         "askedQuestion": "В каком году появился Роблокс",
         "selectedAnswer": "2006",
-        "isCorrect": false
+        "correct": false
       },
       {
         "askedQuestion": "Сколько людей зарегистрировано в Роблоксе?",
         "selectedAnswer": "3 000 000 000",
-        "isCorrect": true
+        "correct": true
       }
     ]
   }

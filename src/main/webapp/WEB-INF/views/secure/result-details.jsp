@@ -47,7 +47,7 @@
     </c:forEach>
 
     <p class="centered">
-        <a href="${pageContext.request.contextPath}/user/history" class="btn btn-secondary">
+        <a href="${pageContext.request.contextPath}/secure/history" class="btn btn-secondary">
             <fmt:message key="button.back_to_history"/>
         </a>
     </p>
