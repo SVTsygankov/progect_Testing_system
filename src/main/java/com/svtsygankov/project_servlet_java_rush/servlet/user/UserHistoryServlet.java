@@ -46,11 +46,16 @@ public class UserHistoryServlet extends HttpServlet {
                         "dateAsDate",
                         java.util.Date.from(result.getDate().atZone(ZoneId.systemDefault()).toInstant())
                 );
-
+                // Считаем количество правильных ответов
                 long correctCount = result.getAnswers().stream()
                         .filter(Result.UserAnswer::isCorrect)
                         .count();
                 resultData.put("correctAnswersCount", correctCount);
+                // Считаем % правильных ответов
+                int totalAnswers = result.getAnswers().size();
+                int successRate = totalAnswers == 0 ? 0 : (int) Math.round((double) correctCount / totalAnswers * 100);
+                resultData.put("successRate", successRate);
+
                 resultsWithCounts.add(resultData);
             }
 

@@ -1,88 +1,112 @@
+/* Общие стили */
 body {
     font-family: Arial, sans-serif;
     background-color: #f7f7f7;
     margin: 0;
     padding: 0;
+    min-height: 100vh;
 }
 
+/* Хедер — фиксированная верхняя панель */
 header {
     background-color: #343a40;
     color: white;
     padding: 20px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 15px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 header h1 {
     margin: 0;
+    flex: 1;
+    text-align: center;
     font-size: 1.5em;
 }
 
-.mode-switcher {
+header .mode-switcher {
     display: flex;
+    gap: 10px; /* Расстояние между кнопками */
+    margin-left: auto; /* Прижимаем к правому краю */
+    padding: 10px 20px; /* Вертикальные отступы + правый отступ */
+}
+
+/* Кнопки в хедере */
+.btn {
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.3s;
 }
 
 .btn-admin, .btn-user-mode {
     background-color: #17a2b8;
     color: white;
-    padding: 8px 12px;
-    border-radius: 4px;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    transition: background-color 0.3s;
+}
+
+.btn-logout {
+    background-color: #dc3545;
+    color: white;
 }
 
 .btn-admin:hover, .btn-user-mode:hover {
     background-color: #138496;
 }
 
-.btn-logout {
-    background-color: #dc3545;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 4px;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    transition: background-color 0.3s;
-}
-
 .btn-logout:hover {
     background-color: #c82333;
 }
-/* Иконки (если ещё нет) */
+
+/* Иконки */
 .fas {
-    margin-right: 5px;
+    margin-right: 6px;
 }
 
+/* Основной контейнер */
 .container {
+    margin-top: 100px; /* Отступ от фиксированного хедера */
+    padding-bottom: 80px; /* Место под футер */
+    min-height: calc(100vh - 180px);
     display: flex;
     justify-content: center;
-    align-items: center;
-    min-height: calc(100vh - 60px);
+    align-items: flex-start;
 }
+
 .form-container {
     background-color: white;
     padding: 25px 30px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    width: 300px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
 }
+
+/* Заголовки */
 h2 {
     text-align: center;
     margin-bottom: 20px;
 }
-input[type="text"], input[type="password"] {
+
+/* Поля ввода */
+input[type="text"],
+input[type="password"] {
     width: 100%;
     padding: 10px;
     margin: 8px 0 15px 0;
     border: 1px solid #ccc;
     border-radius: 4px;
+    box-sizing: border-box;
 }
+
 input[type="submit"] {
     width: 100%;
     padding: 10px;
@@ -91,35 +115,22 @@ input[type="submit"] {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    font-size: 16px;
 }
+
 input[type="submit"]:hover {
     background-color: #0056b3;
 }
+
+/* Сообщения об ошибках */
 .error {
     color: red;
     font-size: 14px;
     margin-bottom: 15px;
     text-align: center;
 }
-/* Кнопка админа */
-.btn-admin {
-    background-color: #17a2b8;
-    color: white;
-    margin-right: 10px;
-}
 
-.btn-user-mode {
-    background-color: #17a2b8;
-    color: white;
-    margin-right: 10px;
-}
-
-/* Кнопка выхода */
-.btn-logout {
-    background-color: #dc3545;
-    color: white;
-}
-
+/* Футер — фиксирован внизу */
 footer {
     background-color: #343a40;
     color: white;
@@ -128,8 +139,11 @@ footer {
     position: fixed;
     bottom: 0;
     width: 100%;
+    height: 40px;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
 }
-/* History Page Styles */
+
+/* Стили страницы истории прохождения тестов */
 .test-result {
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -150,8 +164,27 @@ footer {
     padding: 5px 10px;
     border-radius: 3px;
     text-decoration: none;
+    font-size: 14px;
 }
 
 .btn-details:hover {
     background: #2980b9;
+}
+
+/* Стили для страницы деталей результатов */
+.result-details {
+    display: flex;
+    flex-direction: column; /* Отвечает за вертикальное расположение */
+    gap: 20px; /* Расстояние между вопросами */
+    max-width: 600px; /* Ограничиваем ширину контейнера */
+    overflow-y: auto; /* Добавляем вертикальную прокрутку при необходимости */
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.question-block {
+    text-align: center;
+    margin-bottom: 20px; /* Отступ между вопросами */
 }

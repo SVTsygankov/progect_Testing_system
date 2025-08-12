@@ -48,7 +48,7 @@ public class ResultService {
                 userAnswers.add(Result.UserAnswer.builder()
                         .askedQuestion(question.getText())
                         .selectedAnswer(selectedAnswer.getText())
-                        .isCorrect(selectedAnswer.isCorrect())
+                        .correct(selectedAnswer.isCorrect())
                         .build());
             }
         }
@@ -66,10 +66,14 @@ public class ResultService {
         return result;
     }
 
-    public List<Result> getUserResults(Long userId) throws IOException {
+    public List<Result> getUserResults(long userId) throws IOException {
         return resultDao.findAll().stream()
-                .filter(r -> r.getUserId().equals(userId))
+                .filter(r -> r.getUserId() == userId)
                 .sorted(Comparator.comparing(Result::getDate).reversed())
                 .collect(Collectors.toList());
+    }
+
+    public Result getResultById(long resultId) throws IOException {
+        return resultDao.findById(resultId);
     }
 }

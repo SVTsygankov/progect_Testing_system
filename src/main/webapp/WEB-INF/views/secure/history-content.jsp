@@ -27,8 +27,12 @@
     <p>
       <fmt:message key="history.correct_answers"/>:
         ${resultData.correctAnswersCount} / ${fn:length(resultData.result.answers)}
+      (${resultData.successRate}%)
     </p>
-    <a href="...">
+<%--    <a href="...">--%>
+<%--      <fmt:message key="history.view_details"/>--%>
+<%--    </a>--%>
+    <a href="${pageContext.request.contextPath}/secure/result-details?id=${resultData.result.id}">
       <fmt:message key="history.view_details"/>
     </a>
   </c:forEach>

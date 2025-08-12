@@ -2,6 +2,7 @@ package com.svtsygankov.project_servlet_java_rush.dao;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.svtsygankov.project_servlet_java_rush.entity.Entity;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 
@@ -9,10 +10,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @AllArgsConstructor
-public abstract class BaseDao<T> {
+public abstract class BaseDao<T extends Entity> {
 
     final ObjectMapper objectMapper;
     final File file;
@@ -36,4 +36,12 @@ public abstract class BaseDao<T> {
         }
         return objects;
     }
+
+    public T findById(long id) throws IOException {
+        return findAll().stream()
+                .filter(entity -> entity.getId() == id)
+                .findFirst()
+                .orElse(null); // или бросить исключение
+    }
+
 }

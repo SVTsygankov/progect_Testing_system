@@ -9,11 +9,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class User implements Entity {
 
-    private Long id;
+    private long id;
     private String login;
     private String password;
     private Role role;
 
+    @Override
+    public long getId() {
+        return id;
+    }
 }

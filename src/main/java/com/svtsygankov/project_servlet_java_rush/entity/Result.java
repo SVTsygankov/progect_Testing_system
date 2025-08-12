@@ -17,9 +17,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Result {
-    private Long id;
-    private Long userId;
+public class Result implements Entity {
+    private long id;
+    private long userId;
     private Integer testId;
     private LocalDateTime date;
 
@@ -34,7 +34,12 @@ public class Result {
     public static class UserAnswer {
         private String askedQuestion;
         private String selectedAnswer;
-        @JsonProperty("isCorrect")
-        private boolean isCorrect;
+//        @JsonProperty("isCorrect")
+        private boolean correct;
+    }
+
+    @Override
+    public long getId() {
+        return id;
     }
 }
