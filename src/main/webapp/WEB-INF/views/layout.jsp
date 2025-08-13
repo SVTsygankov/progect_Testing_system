@@ -46,10 +46,12 @@
       </c:when>
     </c:choose>
 
-    <%-- Кнопка выхода для всех --%>
-    <a href="/secure/logout" class="btn btn-logout">
-      <i class="fas fa-sign-out-alt"></i> <fmt:message key="header.button.logout" />
-    </a>
+    <%-- Кнопка выхода — только если пользователь авторизован --%>
+    <c:if test="${sessionScope.user != null}">
+      <a href="/secure/logout" class="btn btn-logout">
+        <i class="fas fa-sign-out-alt"></i> <fmt:message key="header.button.logout" />
+      </a>
+    </c:if>
   </div>
 </header>
 
@@ -57,12 +59,6 @@
   <div class="form-container">
     <jsp:include page="${contentPage}" />
   </div>
-</div>
-
-<!-- Отладочная информация -->
-<div style="background: yellow; padding: 10px; font-weight: bold;">
-  <p>Текущая роль пользователя: ${sessionScope.user.role}</p>
-  <p>Текущий URL: ${requestScope['jakarta.servlet.forward.request_uri']}</p>
 </div>
 
 <footer>

@@ -42,25 +42,42 @@ public class ResultService {
             Question question = questions.get(i);
             Integer answerIndex = questionToAnswerIndex.get(i);
 
-            if (answerIndex != null && answerIndex < question.getAnswers().size()) {
-                Answer selectedAnswer = question.getAnswers().get(answerIndex);
+            // Находим выбранный пользователем ответ
+            Answer selectedAnswer = null;
+            boolean isCorrect = false;
+            String selectedAnswerText = "Не ответил";
 
-                userAnswers.add(Result.UserAnswer.builder()
+            if (answerIndex != null && answerIndex < question.getAnswers().size()) {
+                selectedAnswer = question.getAnswers().get(answerIndex);
+                selectedAnswerText = selectedAnswer.getText();
+                isCorrect = selectedAnswer.isCorrect();
+
+                // Находим правильный ответ (или несколько)
+                String correctAnswerText = question.getAnswers().stream()
+                        .filter(Answer::isCorrect)
+                        .map(Answer::getText)
+                        .findFirst()
+                        .orElse("Правильный ответ не указан");
+
+                // Создаём UserAnswer с correctAnswer
+                Result.UserAnswer userAnswer = Result.UserAnswer.builder()
                         .askedQuestion(question.getText())
-                        .selectedAnswer(selectedAnswer.getText())
-                        .correct(selectedAnswer.isCorrect())
-                        .build());
+                        .selectedAnswer(selectedAnswerText)
+                        .correct(isCorrect)
+                        .correctAnswer(correctAnswerText)  // ✅ Добавляем правильный ответ
+                        .build();
+
+                userAnswers.add(userAnswer);
             }
         }
-
-        // 4. Создаем и сохраняем результат
-        Result result = Result.builder()
-                .id(resultDao.getNextId())
-                .userId(userId)
-                .testId(testId)
-                .date(LocalDateTime.now())
-                .answers(userAnswers)
-                .build();
+            // 4. Создаем и сохраняем результат
+            Result result = Result.builder()
+                    .id(resultDao.getNextId())
+                    .userId(userId)
+                    .testId(testId)
+                    .date(LocalDateTime.now())
+                    .answers(userAnswers)
+                    .build();
 
         resultDao.save(result);
         return result;

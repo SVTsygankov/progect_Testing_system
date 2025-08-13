@@ -36,6 +36,7 @@ public class Result implements Entity {
         private String selectedAnswer;
 //        @JsonProperty("isCorrect")
         private boolean correct;
+        private String correctAnswer; // ✅ Новое поле
     }
 
     @Override

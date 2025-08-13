@@ -16,9 +16,9 @@ public class TestService {
         return testDao.findAll();
     }
 
-    public Test findById(Integer id) throws IOException {
-        return testDao.findById(id);
-    }
+//    public Test findById(Integer id) throws IOException {
+//        return testDao.findById(id);
+//    }
 
     public Test createTest(String title, String topic, Long authorId,
                        List<Question> questions) throws IOException {

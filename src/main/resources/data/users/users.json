@@ -15,7 +15,7 @@
     "id": 3,
     "login": "Тимур",
     "password": "$2a$10$FLgnd94ZvjcLDJ7VPHAddO9SXwx73TDWrUFFK/wRlN/J1kKVoryZy",
-    "role": "USER"
+    "role": "ADMIN"
   },
   {
     "id": 5,
