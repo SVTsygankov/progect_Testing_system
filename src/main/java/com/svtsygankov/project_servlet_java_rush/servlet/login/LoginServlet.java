@@ -35,7 +35,8 @@ public class LoginServlet extends BaseAuthenticationServlet {
             resp.sendRedirect(redirectUrl);
 
         } else {
-            req.setAttribute("contentPage", getInitParameter("contentPage"));
+            req.setAttribute("contentPage", "/WEB-INF/views/"+
+                    getInitParameter("contentPage") + ".jsp");
             req.getRequestDispatcher(getInitParameter("resourceName")).forward(req, resp);
         }
     }

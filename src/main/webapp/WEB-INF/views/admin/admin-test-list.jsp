@@ -37,6 +37,10 @@
       </c:forEach>
     </div>
   </c:forEach>
+  <br>
+  <a href="/admin/statistics" class="btn btn-secondary">
+    <i class="fas fa-chart-bar"></i> Статистика
+  </a>
 </c:if>
 
 <!-- Модальное окно (добавляем в конец файла) -->

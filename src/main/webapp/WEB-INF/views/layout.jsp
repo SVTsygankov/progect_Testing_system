@@ -27,7 +27,17 @@
 <body>
 
 <header>
+  <div class="header-left">
+    <c:if test="${not pageContext.request.requestURI.endsWith('/login') &&
+                  not pageContext.request.requestURI.endsWith('/register')}">
+      <a href="javascript:history.back()" class="btn btn-back">
+        <i class="fas fa-arrow-left"></i> <fmt:message key="button.back" />
+      </a>
+    </c:if>
+  </div>
+
   <h1><fmt:message key="header.app.title" /></h1>
+
   <div class="mode-switcher">
     <c:choose>
       <%-- Админ в админ-панели: кнопка "Перейти в пользовательский режим" --%>

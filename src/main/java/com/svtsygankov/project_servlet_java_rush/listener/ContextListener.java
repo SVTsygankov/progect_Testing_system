@@ -1,10 +1,5 @@
 package com.svtsygankov.project_servlet_java_rush.listener;
 
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -31,13 +26,13 @@ public class ContextListener implements ServletContextListener {
 
     public static final String AUTHENTICATION_SERVICE = "authenticationService";
     public static final String TEST_SERVICE = "testService";
+    public static final String USER_SERVICE = "userService";
     public static final String RESULTS_SERVICE = "resultsService";
     public static final String OBJECT_MAPPER = "objectMapper";
     public static final String TEST_FORM_VALIDATOR = "testFormValidator";
     public static final String TESTS_PATH =        "E:\\JavaRush\\Project_servlet_Java_Rush\\src\\main\\resources\\data\\tests";
     public static final String USER_FILE_PATH =    "E:\\JavaRush\\Project_servlet_Java_Rush\\src\\main\\resources\\data\\users\\users.json";
     public static final String RESULTS_FILE_PATH = "E:\\JavaRush\\Project_servlet_Java_Rush\\src\\main\\resources\\data\\results\\results.json";
-
 
     @SneakyThrows
     @Override
@@ -69,6 +64,7 @@ public class ContextListener implements ServletContextListener {
 
         servletContext.setAttribute(AUTHENTICATION_SERVICE, authenticationService);
         servletContext.setAttribute(TEST_SERVICE, testService);
+        servletContext.setAttribute(USER_SERVICE, userService);
         servletContext.setAttribute(RESULTS_SERVICE, resultsService);
         servletContext.setAttribute(OBJECT_MAPPER, objectMapper);
         servletContext.setAttribute(TEST_FORM_VALIDATOR, validator);

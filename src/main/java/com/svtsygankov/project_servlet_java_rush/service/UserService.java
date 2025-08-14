@@ -46,4 +46,8 @@ public class UserService {
                 .count();
         return count != 0;
     }
+
+    public long getUserCount() throws IOException {
+        return userDao.findAll().size();
+    }
 }

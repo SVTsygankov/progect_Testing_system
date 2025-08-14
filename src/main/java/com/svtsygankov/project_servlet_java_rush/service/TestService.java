@@ -44,4 +44,8 @@ public class TestService {
     public boolean deleteById(int id) throws IOException {
         return testDao.deleteById(id);
     }
+    public long getTestCount() throws IOException {
+        return testDao.findAll().size();
+    }
+
 }

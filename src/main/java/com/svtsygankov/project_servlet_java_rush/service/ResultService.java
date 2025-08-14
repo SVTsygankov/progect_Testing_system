@@ -93,4 +93,8 @@ public class ResultService {
     public Result getResultById(long resultId) throws IOException {
         return resultDao.findById(resultId);
     }
+
+    public long getTotalResultCount() throws IOException {
+        return resultDao.findAll().size();
+    }
 }
