@@ -1,0 +1,80 @@
+{
+  "id": 8,
+  "title": "майнкрафт",
+  "topic": "майнкрафт",
+  "created_by": 3,
+  "questions": [
+    {
+      "text": "какой блок нельзя сломать",
+      "answers": [
+        {
+          "text": "бедрок",
+          "correct": true
+        },
+        {
+          "text": "обсидиан",
+          "correct": false
+        },
+        {
+          "text": "алмазный блок",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "text": "в каком году появился майнкрафт",
+      "answers": [
+        {
+          "text": "2008",
+          "correct": false
+        },
+        {
+          "text": "2011",
+          "correct": true
+        },
+        {
+          "text": "2019",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "text": "что любят жители больше всего",
+      "answers": [
+        {
+          "text": "алмаз",
+          "correct": false
+        },
+        {
+          "text": "железо",
+          "correct": false
+        },
+        {
+          "text": "изумруд",
+          "correct": true
+        },
+        {
+          "text": "нос",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "text": "что нельзя делать в майнкрафте в выживании",
+      "answers": [
+        {
+          "text": "летать",
+          "correct": true
+        },
+        {
+          "text": "ломать блоки кроме (бедрока)",
+          "correct": false
+        },
+        {
+          "text": "СИГМА СИШМА СИГМА",
+          "correct": false
+        }
+      ]
+    }
+  ]
+}

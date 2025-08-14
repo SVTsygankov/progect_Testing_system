@@ -1,0 +1,50 @@
+{
+  "id": 2,
+  "title": "Знаешь ли ты Роблокс",
+  "topic": "Роблокс",
+  "created_by": 1,
+  "questions": [
+    {
+      "text": "В каком году появился Роблокс",
+      "answers": [
+        {
+          "text": "2006",
+          "correct": false
+        },
+        {
+          "text": "2014",
+          "correct": false
+        },
+        {
+          "text": "2023",
+          "correct": false
+        },
+        {
+          "text": "1980",
+          "correct": true
+        }
+      ]
+    },
+    {
+      "text": "Сколько людей зарегистрировано в Роблоксе?",
+      "answers": [
+        {
+          "text": "1 000 000 0000",
+          "correct": false
+        },
+        {
+          "text": "200 000",
+          "correct": false
+        },
+        {
+          "text": "3 000 000 000",
+          "correct": true
+        },
+        {
+          "text": "2000",
+          "correct": false
+        }
+      ]
+    }
+  ]
+}
