@@ -12,66 +12,61 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>Доступные тесты</title>
-<%--  <style>--%>
-<%--    body {--%>
-<%--      font-family: Arial, sans-serif;--%>
-<%--      margin: 20px;--%>
-<%--    }--%>
-<%--    table {--%>
-<%--      border-collapse: collapse;--%>
-<%--      width: 100%;--%>
-<%--      margin-bottom: 20px;--%>
-<%--    }--%>
-<%--    th, td {--%>
-<%--      border: 1px solid #ddd;--%>
-<%--      padding: 8px;--%>
-<%--      text-align: left;--%>
-<%--    }--%>
-<%--    th {--%>
-<%--      background-color: #f2f2f2;--%>
-<%--    }--%>
-<%--    a {--%>
-<%--      text-decoration: none;--%>
-<%--      color: #0066cc;--%>
-<%--    }--%>
-<%--    a:hover {--%>
-<%--      text-decoration: underline;--%>
-<%--    }--%>
-<%--    .topic-header {--%>
-<%--      margin-top: 20px;--%>
-<%--      font-weight: bold;--%>
-<%--    }--%>
-<%--  </style>--%>
+  <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/styles.css">
+  <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/test-list.css">
 </head>
-<body>
-<h1>Доступные тесты</h1>
+<body class="test-list-container">
+<div class="test-list-wrapper">
+  <h1 class="test-list-header">Доступные тесты</h1>
 
-<c:if test="${empty testsByTopic}">
-  <p>Нет доступных тестов.</p>
-</c:if>
+  <div class="spacer"></div>
 
-<c:forEach items="${testsByTopic}" var="topicGroup">
-  <div class="topic-header">Тема: ${topicGroup.key}</div>
-  <table>
-    <tr>
-      <th>Название теста</th>
-      <th>Действия</th>
-    </tr>
-    <c:forEach items="${topicGroup.value}" var="test">
+  <c:if test="${empty testsByTopic}">
+    <div class="no-tests-message">
+      <p>Нет доступных тестов.</p>
+    </div>
+  </c:if>
+
+  <c:if test="${not empty testsByTopic}">
+    <table class="tests-table">
+      <thead>
       <tr>
-        <td>${test.title}</td>
-        <td>
-          <a href="${pageContext.request.contextPath}/start-test?id=${test.id}">Пройти тест</a>
-        </td>
+        <th>Название теста</th>
+        <th>Действия</th>
       </tr>
-    </c:forEach>
-  </table>
-</c:forEach>
+      </thead>
+    </table>
 
-<div style="margin-top: 20px;">
-  <a href="${pageContext.request.contextPath}/secure/history" style="padding: 5px 10px; background: #f2f2f2; border: 1px solid #ddd;">
-    Просмотр истории тестирований
-  </a>
+    <div class="test-table-container">
+      <table class="tests-table">
+        <tbody>
+        <c:forEach items="${testsByTopic}" var="topicGroup">
+          <tr>
+            <td colspan="2" class="test-topic-header">Тема: ${topicGroup.key}</td>
+          </tr>
+          <c:forEach items="${topicGroup.value}" var="test">
+            <tr>
+              <td>${test.title}</td>
+              <td>
+                <a href="${pageContext.request.contextPath}/start-test?id=${test.id}"
+                   class="take-test-btn">
+                  Пройти тест
+                </a>
+              </td>
+            </tr>
+          </c:forEach>
+          <tr><td colspan="2"><div class="spacer"></div></td></tr>
+        </c:forEach>
+        </tbody>
+      </table>
+    </div>
+  </c:if>
+
+  <div class="history-link-container">
+    <a href="${pageContext.request.contextPath}/secure/history" class="history-link">
+      Просмотр истории тестирований
+    </a>
+  </div>
 </div>
 </body>
 </html>

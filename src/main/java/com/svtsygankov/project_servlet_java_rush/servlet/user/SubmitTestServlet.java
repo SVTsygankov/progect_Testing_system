@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,11 +32,11 @@ public class SubmitTestServlet extends HttpServlet {
         this.resultService = (ResultService) config.getServletContext().getAttribute(RESULTS_SERVICE);
     }
 
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
         try {
-
             // 2. Получаем testId из сессии
             Integer testId = (Integer) req.getSession().getAttribute("currentTestId");
             if (testId == null) {
@@ -47,16 +48,25 @@ public class SubmitTestServlet extends HttpServlet {
 
             // 4. Сохраняем результат
             var user = (User) req.getSession().getAttribute("user");
-            Result result = resultService.createTestResult(user.getId(), testId, questionToAnswerMap);
+            Result result = resultService.createTestResult(user.getId(), testId,
+                    questionToAnswerMap);
 
-            // 5. Очищаем сессию и показываем результат
+            // 5. Преобразуем LocalDateTime в Date для JSP
+            java.util.Date resultDateAsDate = java.util.Date.from(
+                    result.getDate().atZone(ZoneId.systemDefault()).toInstant()
+            );
+            req.setAttribute("resultDateAsDate", resultDateAsDate);
+
+            // 6. Очищаем сессию и показываем результат
             req.getSession().removeAttribute("currentTestId");
             req.setAttribute("result", result);
-            req.getRequestDispatcher("/WEB-INF/views/secure/test-result.jsp").forward(req, resp);
+            req.setAttribute("contentPage", "/WEB-INF/views/secure/test-result-content.jsp");
+            req.getRequestDispatcher("/WEB-INF/views/layout.jsp").forward(req, resp);
 
         } catch (Exception e) {
             req.setAttribute("error", "Ошибка сохранения результатов: " + e.getMessage());
-            req.getRequestDispatcher("/WEB-INF/views/alerts.jsp").forward(req, resp);
+            req.setAttribute("contentPage", "/WEB-INF/views/alerts.jsp"); //
+            req.getRequestDispatcher("/WEB-INF/views/layout.jsp").forward(req, resp);
         }
     }
 

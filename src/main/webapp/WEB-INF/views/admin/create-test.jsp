@@ -154,7 +154,7 @@
         addAnswerBtn.textContent = '+ Добавить ответ';
         addAnswerBtn.addEventListener('click', () => {
           if (!question.answers) question.answers = [];
-          question.answers.push({ text: "", isCorrect: false });
+          question.answers.push({ text: "", correct: false });
           renderQuestions();
         });
 
@@ -162,7 +162,7 @@
         if (question.answers && question.answers.length > 0) {
           question.answers.forEach((answer, aIndex) => {
             const answerDiv = document.createElement('div');
-            answerDiv.className = 'answer-item' + (answer.isCorrect ? ' correct-answer' : '');
+            answerDiv.className = 'answer-item' + (answer.correct ? ' correct-answer' : '');
 
             // Поле ответа
             const answerInput = document.createElement('input');
@@ -180,9 +180,9 @@
 
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
-            checkbox.checked = answer.isCorrect || false;
+            checkbox.checked = answer.correct || false;
             checkbox.addEventListener('change', (e) => {
-              answer.isCorrect = e.target.checked;
+              answer.correct = e.target.checked;
               answerDiv.classList.toggle('correct-answer', e.target.checked);
             });
 
@@ -272,7 +272,7 @@
 
     // Первоначальный рендеринг (добавляем один пустой вопрос)
     if (testState.questions.length === 0) {
-      testState.questions.push({ text: "", answers: [{text: "", isCorrect: false}, {text: "", isCorrect: false}] });
+      testState.questions.push({ text: "", answers: [{text: "", correct: false}, {text: "", correct: false}] });
     }
     renderQuestions();
   });

@@ -155,7 +155,7 @@
         addAnswerBtn.textContent = '+ Добавить ответ';
         addAnswerBtn.addEventListener('click', () => {
           if (!question.answers) question.answers = [];
-          question.answers.push({ text: "", isCorrect: false });
+          question.answers.push({ text: "", correct: false });
           renderQuestions();
         });
 
@@ -181,9 +181,9 @@
 
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
-            checkbox.checked = answer.isCorrect || false;
+            checkbox.checked = answer.correct || false;
             checkbox.addEventListener('change', (e) => {
-              answer.isCorrect = e.target.checked;
+              answer.correct = e.target.checked;
             });
 
             checkboxLabel.appendChild(checkbox);

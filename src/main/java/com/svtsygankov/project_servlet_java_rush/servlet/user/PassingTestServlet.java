@@ -27,15 +27,21 @@ public class PassingTestServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//        int id = Integer.parseInt(req.getParameter("id"));
         Integer id = (Integer) req.getSession().getAttribute("currentTestId");
-        Test test = testService.findById(id);
 
+        if (id == null) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID теста не найден в сессии");
+            return;
+        }
+
+        Test test = testService.findById(id);
         if (test == null) {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Тест не найден");
             return;
         }
+
         req.setAttribute("test", test);
-        req.getRequestDispatcher("/WEB-INF/views/secure/passing-test.jsp").forward(req, resp);
+        req.setAttribute("contentPage", "/WEB-INF/views/secure/passing-test-content.jsp");
+        req.getRequestDispatcher("/WEB-INF/views/layout.jsp").forward(req, resp);
     }
 }
