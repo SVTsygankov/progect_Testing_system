@@ -22,5 +22,17 @@
     "login": "SVTsygankov2",
     "password": "$2a$10$zU8UVOZONGZ.P0sTRpD9H.5Ym2HAydKNAbA6VALCoGAL/aM8.2Smi",
     "role": "USER"
+  },
+  {
+    "id": 6,
+    "login": "Tan",
+    "password": "$2a$10$cSWvbh2FjDXa2g6fVeJR3O99jcTZGFJ.hkh0.7I.caL8G31BCB6Te",
+    "role": "USER"
+  },
+  {
+    "id": 7,
+    "login": "Tanzilia",
+    "password": "$2a$10$UVm3G22GbbCcnJCmNlTO9e.5gRLddvC6kzdnZBvi6CVJWmIxeVm9u",
+    "role": "USER"
   }
 ]
